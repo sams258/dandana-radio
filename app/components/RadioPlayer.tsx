@@ -10,19 +10,26 @@ import { useLang } from "../lib/lang";
 
 export function RadioPlayer() {
   const { lang, t } = useLang();
-  const { state, volume, muted, togglePlay, toggleMute, handleVolumeChange, isPlaying, isLoading, isError, play } = usePlayer();
+  const { volume, muted, togglePlay, toggleMute, handleVolumeChange, isPlaying, isLoading, isError, play } = usePlayer();
   const { data: np } = useNowPlaying();
   const [imgError, setImgError] = useState(false);
 
   const isAr = lang === "ar";
 
+  const displayTitle = isLoading
+    ? t("player.loading")
+    : isError
+    ? t("player.error")
+    : np.title || "Radio Dandana";
+
+  const useMarquee = displayTitle.length > 30;
+
   return (
     <section
       id="player"
-      className="w-full max-w-3xl mx-auto px-4 py-6"
+      className="w-full max-w-2xl mx-auto px-4 py-8"
       aria-label={isAr ? "مشغّل الراديو" : "Radio Player"}
     >
-      {/* ── PLAYER CARD ── */}
       <div
         className="glass-card rounded-2xl overflow-hidden"
         style={{
@@ -39,14 +46,20 @@ export function RadioPlayer() {
           }}
         />
 
-        <div className="p-6 md:p-8">
-          {/* ── TOP ROW: Cover art + Now Playing info ── */}
-          <div className="flex gap-4 items-start mb-6">
-            {/* Album art / logo fallback */}
+        <div className="p-6 md:p-8 flex flex-col gap-6">
+          {/* ROW 1 — Album art + track info */}
+          <div className="flex flex-row gap-5 items-center">
+            {/* Album art */}
             <div
-              className="relative shrink-0 rounded-xl overflow-hidden"
               style={{
-                width: "88px", height: "88px", minWidth: "88px",
+                width: "88px",
+                height: "88px",
+                minWidth: "88px",
+                minHeight: "88px",
+                position: "relative",
+                borderRadius: "12px",
+                overflow: "hidden",
+                flexShrink: 0,
                 boxShadow: "0 0 0 1px rgba(201,169,110,0.2), 0 8px 24px rgba(0,0,0,0.6)",
               }}
             >
@@ -55,12 +68,14 @@ export function RadioPlayer() {
                   src={np.coverUrl}
                   alt={np.title}
                   fill
-                  className="object-cover"
+                  style={{ objectFit: "cover" }}
                   onError={() => setImgError(true)}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center"
-                  style={{ background: "linear-gradient(135deg, #131313, #1e1a10)" }}>
+                <div
+                  className="w-full h-full flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg, #131313, #1e1a10)" }}
+                >
                   <Image
                     src="/logo.png"
                     alt="Radio Dandana"
@@ -70,12 +85,11 @@ export function RadioPlayer() {
                   />
                 </div>
               )}
-
-              {/* Spinning disc ring when playing */}
               {isPlaying && (
                 <div
-                  className="absolute inset-0 rounded-xl animate-spin-slow"
+                  className="absolute inset-0 animate-spin-slow"
                   style={{
+                    borderRadius: "12px",
                     background:
                       "conic-gradient(from 0deg, transparent 60%, rgba(201,169,110,0.15) 100%)",
                     animationDuration: "6s",
@@ -84,34 +98,36 @@ export function RadioPlayer() {
               )}
             </div>
 
-            {/* Now Playing text */}
-            <div className="flex-1 min-w-0">
-              {/* LIVE badge */}
-              <div className="flex items-center gap-2 mb-2">
+            {/* Track info */}
+            <div className="flex flex-col gap-1 flex-1 min-w-0">
+              {/* LIVE badge row */}
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="relative flex items-center justify-center w-3 h-3">
                   <span
                     className="pulse-ring absolute inline-flex w-3 h-3 rounded-full"
-                    style={{
-                      background: isPlaying ? "var(--gold-mid)" : "var(--text-subtle)",
-                    }}
+                    style={{ background: isPlaying ? "var(--gold-mid)" : "var(--text-subtle)" }}
                   />
                   <span
                     className="relative inline-flex w-2 h-2 rounded-full"
-                    style={{
-                      background: isPlaying ? "var(--gold-light)" : "var(--text-subtle)",
-                    }}
+                    style={{ background: isPlaying ? "var(--gold-light)" : "var(--text-subtle)" }}
                   />
                 </span>
                 <span
-                  className="text-[10px] font-semibold tracking-[0.2em] uppercase"
-                  style={{ color: "var(--gold-mid)", fontFamily: "monospace" }}
+                  style={{
+                    color: "var(--gold-mid)",
+                    fontFamily: "monospace",
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                  }}
                 >
                   {t("player.live")}
                 </span>
                 {np.listeners > 0 && (
                   <span
-                    className="flex items-center gap-1 text-[10px] ms-2"
-                    style={{ color: "var(--text-muted)" }}
+                    className="flex items-center gap-1 ms-2"
+                    style={{ color: "var(--text-muted)", fontSize: "10px" }}
                   >
                     <Users size={10} />
                     {np.listeners.toLocaleString(isAr ? "ar-EG" : "en-US")}{" "}
@@ -120,66 +136,69 @@ export function RadioPlayer() {
                 )}
               </div>
 
-              {/* Now Playing label */}
+              {/* "يُعزف الآن" label */}
               <p
-                className="text-[11px] uppercase tracking-widest mb-1"
-                style={{ color: "var(--text-muted)", fontFamily: "monospace" }}
+                style={{
+                  color: "var(--text-muted)",
+                  fontFamily: "monospace",
+                  fontSize: "10px",
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                }}
               >
                 {t("player.now")}
               </p>
 
-              {/* Song title — marquee if long */}
-              <div className="marquee-track">
-                <div className="marquee-inner">
-                  <span
-                    className={`text-lg md:text-xl font-medium ${isAr ? "font-arabic" : ""}`}
-                    style={{ color: "var(--gold-light)" }}
-                  >
-                    {isLoading
-                      ? t("player.loading")
-                      : isError
-                      ? t("player.error")
-                      : np.title || "Radio Dandana"}
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    {/* duplicate for seamless loop */}
-                    {isLoading
-                      ? t("player.loading")
-                      : isError
-                      ? t("player.error")
-                      : np.title || "Radio Dandana"}
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  </span>
+              {/* Song title — marquee only if title > 30 chars */}
+              {useMarquee ? (
+                <div className="marquee-track">
+                  <div className="marquee-inner">
+                    <span
+                      className={`text-lg font-semibold ${isAr ? "font-arabic" : ""}`}
+                      style={{ color: "var(--gold-light)" }}
+                    >
+                      {displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <span
+                  className={`text-lg font-semibold truncate ${isAr ? "font-arabic" : ""}`}
+                  style={{ color: "var(--gold-light)" }}
+                >
+                  {displayTitle}
+                </span>
+              )}
 
               {/* Artist name */}
               {np.artist && !isLoading && !isError && (
                 <p
-                  className={`text-sm mt-0.5 ${isAr ? "font-arabic" : ""}`}
+                  className={`text-sm ${isAr ? "font-arabic" : ""}`}
                   style={{ color: "var(--text-muted)" }}
                 >
                   {np.artist}
                 </p>
               )}
 
-              {/* Up next */}
+              {/* Up Next */}
               {np.nextTitle && (
-                <p style={{ color: "var(--text-subtle)", fontSize: "0.72rem", marginTop: "4px" }}>
-                  {lang === "ar" ? "التالي:" : "Up next:"} {np.nextArtist} {np.nextArtist && np.nextTitle ? "–" : ""} {np.nextTitle}
+                <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
+                  {lang === "ar" ? "التالي:" : "Up next:"}{" "}
+                  {np.nextArtist} — {np.nextTitle}
                 </p>
               )}
             </div>
           </div>
 
-          {/* ── VISUALIZER ── */}
+          {/* ROW 2 — Visualizer */}
           <div
-            className="flex justify-center mb-6"
-            style={{ opacity: isPlaying ? 1 : 0.35, transition: "opacity 0.5s" }}
+            className="flex justify-center"
+            style={{ opacity: isPlaying ? 1 : 0.3, transition: "opacity 0.5s" }}
           >
             <Visualizer isPlaying={isPlaying} barCount={32} />
           </div>
 
-          {/* ── CONTROLS ROW ── */}
+          {/* ROW 3 — Controls */}
           <div className="flex items-center gap-4">
             {/* Play / Stop button */}
             <button
@@ -194,13 +213,17 @@ export function RadioPlayer() {
                   ? "rgba(201,169,110,0.08)"
                   : isPlaying
                   ? "linear-gradient(135deg, var(--gold-deep), var(--gold-mid))"
-                  : "linear-gradient(135deg, var(--gold-mid), var(--gold-light))",
+                  : "transparent",
                 boxShadow: isPlaying
                   ? "0 0 24px rgba(201,169,110,0.4), 0 4px 12px rgba(0,0,0,0.5)"
                   : "0 4px 12px rgba(0,0,0,0.4)",
-                border: "1px solid rgba(201,169,110,0.3)",
+                border: isError
+                  ? "1px solid rgba(180,60,60,0.3)"
+                  : isPlaying
+                  ? "1px solid rgba(201,169,110,0.3)"
+                  : "2px solid var(--gold-mid)",
                 opacity: isLoading ? 0.7 : 1,
-                color: isError ? "#c06060" : isLoading ? "var(--gold-mid)" : "#080808",
+                color: isError ? "#c06060" : isLoading ? "var(--gold-mid)" : isPlaying ? "#080808" : "var(--gold-mid)",
               }}
             >
               {isError ? (
@@ -214,8 +237,8 @@ export function RadioPlayer() {
               )}
             </button>
 
-            {/* Volume section */}
-            <div className="flex items-center gap-2 flex-1">
+            {/* Volume row */}
+            <div className="flex items-center gap-3 flex-1">
               <button
                 onClick={toggleMute}
                 aria-label={muted ? (isAr ? "رفع كتم الصوت" : "Unmute") : (isAr ? "كتم الصوت" : "Mute")}
@@ -236,19 +259,16 @@ export function RadioPlayer() {
                 value={muted ? 0 : volume}
                 onChange={(e) => handleVolumeChange(Number(e.target.value))}
                 aria-label={t("player.volume")}
-                dir="ltr" // range input always LTR for consistent UX
+                dir="ltr"
+                className="flex-1"
                 style={{
                   background: `linear-gradient(to right, var(--gold-mid) 0%, var(--gold-mid) ${(muted ? 0 : volume) * 100}%, var(--text-subtle) ${(muted ? 0 : volume) * 100}%, var(--text-subtle) 100%)`,
                 }}
               />
             </div>
 
-            {/* Error state inline message */}
             {isError && (
-              <p
-                className="text-xs shrink-0"
-                style={{ color: "#c06060" }}
-              >
+              <p className="text-xs shrink-0" style={{ color: "#c06060" }}>
                 {t("player.error")}
               </p>
             )}
@@ -259,8 +279,7 @@ export function RadioPlayer() {
         <div
           className="h-[1px] w-full"
           style={{
-            background:
-              "linear-gradient(90deg, transparent, var(--gold-deep), transparent)",
+            background: "linear-gradient(90deg, transparent, var(--gold-deep), transparent)",
           }}
         />
       </div>

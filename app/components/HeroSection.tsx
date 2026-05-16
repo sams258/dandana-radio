@@ -129,7 +129,7 @@ export function HeroSection() {
 
         {/* Subtitle */}
         <p
-          className={`text-base md:text-lg mb-10 max-w-md animate-fade-up ${
+          className={`text-base md:text-lg mb-0 max-w-md animate-fade-up ${
             lang === "ar" ? "font-arabic" : ""
           }`}
           style={{
@@ -144,31 +144,37 @@ export function HeroSection() {
 
         {/* CTA buttons */}
         <div
-          className="flex flex-wrap gap-3 justify-center animate-fade-up"
+          className="flex flex-row gap-4 justify-center mt-10 animate-fade-up"
           style={{ animationDelay: "0.7s", animationFillMode: "both" }}
         >
           <a
             href="#player"
-            className={`px-7 py-3 min-w-[140px] rounded-full font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 ${
+            className={`px-8 py-3 rounded-full font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 ${
               lang === "ar" ? "font-arabic" : ""
             }`}
             style={{
               background: "linear-gradient(135deg, var(--gold-deep) 0%, var(--gold-mid) 50%, var(--gold-light) 100%)",
               color: "#080808",
               boxShadow: "0 0 30px rgba(201,169,110,0.3), 0 4px 15px rgba(0,0,0,0.4)",
+              lineHeight: "1.5",
+              display: "inline-flex",
+              alignItems: "center",
             }}
           >
             {t("hero.cta")}
           </a>
           <a
             href="#schedule"
-            className={`px-7 py-3 min-w-[140px] rounded-full text-sm md:text-base transition-all duration-300 hover:scale-105 ${
+            className={`px-8 py-3 rounded-full text-sm md:text-base transition-all duration-300 hover:scale-105 ${
               lang === "ar" ? "font-arabic" : ""
             }`}
             style={{
               color: "var(--gold-mid)",
               border: "1px solid rgba(201,169,110,0.35)",
               background: "rgba(201,169,110,0.05)",
+              lineHeight: "1.5",
+              display: "inline-flex",
+              alignItems: "center",
             }}
           >
             {t("hero.cta2")}

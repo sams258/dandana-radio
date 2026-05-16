@@ -12,20 +12,22 @@ export default function Home() {
     <LangProvider>
       <Navbar />
       <main>
-        <HeroSection />
+        <div className="max-w-5xl mx-auto w-full">
+          <HeroSection />
 
-        {/* Player section — anchored below hero */}
-        <section
-          id="listen"
-          className="py-8 px-4 sm:px-6"
-          style={{ background: "linear-gradient(to bottom, var(--black-void), var(--black-deep))" }}
-        >
-          <RadioPlayer />
-        </section>
+          {/* Player section — anchored below hero */}
+          <section
+            id="listen"
+            className="py-8 px-4 sm:px-6"
+            style={{ background: "linear-gradient(to bottom, var(--black-void), var(--black-deep))" }}
+          >
+            <RadioPlayer />
+          </section>
 
-        <AboutSection />
-        <ScheduleSection />
-        <ContactSection />
+          <AboutSection />
+          <ScheduleSection />
+          <ContactSection />
+        </div>
       </main>
       <Footer />
     </LangProvider>

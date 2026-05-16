@@ -91,28 +91,28 @@ export function ScheduleSection() {
       </h2>
 
       <div className="grid grid-cols-2 gap-3 w-full">
-        {scheduleItems.map(({ key, timeKey, nameKey, Icon, gradient }) => (
+        {scheduleItems.map(({ key, timeKey, nameKey, Icon }) => (
           <div
             key={key}
-            className={`glass-card rounded-xl p-4 flex items-center gap-3 bg-gradient-to-br ${gradient} transition-all duration-300 hover:scale-[1.02]`}
-            style={{ borderColor: "rgba(201,169,110,0.1)" }}
+            className="glass-card rounded-xl p-5 flex items-center gap-4"
           >
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+              className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
               style={{ background: "rgba(201,169,110,0.08)", border: "1px solid rgba(201,169,110,0.15)" }}
             >
               <Icon size={20} style={{ color: "var(--gold-mid)" }} />
             </div>
-            <div>
+            <div className="flex flex-col gap-0.5 min-w-0">
               <p
-                className={`font-medium mb-0.5 ${lang === "ar" ? "font-arabic text-base" : "text-lg"}`}
+                className={`text-sm font-semibold truncate ${lang === "ar" ? "font-arabic" : ""}`}
                 style={{ color: "var(--gold-light)" }}
               >
                 {t(nameKey)}
               </p>
               <p
-                className="text-sm font-mono"
-                style={{ color: "var(--text-muted)", direction: "ltr" }}
+                className="text-xs font-mono"
+                style={{ color: "var(--text-muted)" }}
+                dir="ltr"
               >
                 {t(timeKey)}
               </p>
@@ -141,16 +141,16 @@ export function ContactSection() {
   };
 
   const inputStyle: React.CSSProperties = {
-    background: "rgba(201,169,110,0.04)",
-    border: "1px solid rgba(201,169,110,0.15)",
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(201,169,110,0.2)",
     borderRadius: "10px",
-    padding: "12px 16px",
+    padding: "10px 14px",
     color: "var(--text-primary)",
     width: "100%",
     outline: "none",
     fontFamily: "Cairo, 'IBM Plex Sans Arabic', sans-serif",
     display: "block",
-    fontSize: lang === "ar" ? "0.95rem" : "1rem",
+    fontSize: "0.9rem",
     lineHeight: lang === "ar" ? "1.8" : "1.6",
     transition: "border-color 0.2s",
   };
@@ -177,10 +177,10 @@ export function ContactSection() {
         onSubmit={handleSubmit}
         className="glass-card rounded-2xl p-7 flex flex-col gap-4"
       >
-        <div className="w-full">
+        <div className="flex flex-col gap-1.5 w-full">
           <label
             htmlFor="contact-name"
-            className={`block text-sm mb-1.5 ${lang === "ar" ? "font-arabic" : ""}`}
+            className={`text-sm ${lang === "ar" ? "font-arabic" : ""}`}
             style={{ color: "var(--text-muted)" }}
           >
             {t("contact.name")}
@@ -191,14 +191,14 @@ export function ContactSection() {
             required
             style={inputStyle}
             onFocus={(e) => (e.target.style.borderColor = "rgba(201,169,110,0.45)")}
-            onBlur={(e)  => (e.target.style.borderColor = "rgba(201,169,110,0.15)")}
+            onBlur={(e)  => (e.target.style.borderColor = "rgba(201,169,110,0.2)")}
           />
         </div>
 
-        <div className="w-full">
+        <div className="flex flex-col gap-1.5 w-full">
           <label
             htmlFor="contact-email"
-            className={`block text-sm mb-1.5 ${lang === "ar" ? "font-arabic" : ""}`}
+            className={`text-sm ${lang === "ar" ? "font-arabic" : ""}`}
             style={{ color: "var(--text-muted)" }}
           >
             {t("contact.email")}
@@ -210,14 +210,14 @@ export function ContactSection() {
             dir="ltr"
             style={inputStyle}
             onFocus={(e) => (e.target.style.borderColor = "rgba(201,169,110,0.45)")}
-            onBlur={(e)  => (e.target.style.borderColor = "rgba(201,169,110,0.15)")}
+            onBlur={(e)  => (e.target.style.borderColor = "rgba(201,169,110,0.2)")}
           />
         </div>
 
-        <div className="w-full">
+        <div className="flex flex-col gap-1.5 w-full">
           <label
             htmlFor="contact-msg"
-            className={`block text-sm mb-1.5 ${lang === "ar" ? "font-arabic" : ""}`}
+            className={`text-sm ${lang === "ar" ? "font-arabic" : ""}`}
             style={{ color: "var(--text-muted)" }}
           >
             {t("contact.message")}
@@ -228,13 +228,13 @@ export function ContactSection() {
             required
             style={{ ...inputStyle, resize: "vertical" }}
             onFocus={(e) => (e.target.style.borderColor = "rgba(201,169,110,0.45)")}
-            onBlur={(e)  => (e.target.style.borderColor = "rgba(201,169,110,0.15)")}
+            onBlur={(e)  => (e.target.style.borderColor = "rgba(201,169,110,0.2)")}
           />
         </div>
 
         <button
           type="submit"
-          className={`mt-2 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-[1.02] ${
+          className={`py-3 px-8 rounded-xl font-semibold text-sm self-start mt-2 transition-all duration-300 hover:scale-[1.02] ${
             lang === "ar" ? "font-arabic" : ""
           }`}
           style={{
