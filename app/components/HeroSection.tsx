@@ -75,6 +75,10 @@ export function HeroSection() {
           90%  { opacity: var(--opacity); }
           100% { transform: translateY(-110vh) translateX(var(--drift)) rotate(25deg); opacity: 0; }
         }
+        @keyframes logoGlow {
+          0%   { filter: drop-shadow(0 0 30px rgba(201,169,110,0.4)) drop-shadow(0 0 60px rgba(201,169,110,0.2)) drop-shadow(0 0 100px rgba(139,105,20,0.15)); }
+          100% { filter: drop-shadow(0 0 60px rgba(201,169,110,0.7)) drop-shadow(0 0 100px rgba(201,169,110,0.35)) drop-shadow(0 0 160px rgba(139,105,20,0.3)); }
+        }
       `}</style>
 
       {/* Music notes container */}
@@ -123,7 +127,10 @@ export function HeroSection() {
             priority
             unoptimized
             className="w-full h-auto object-contain"
-            style={{ filter: "drop-shadow(0 0 80px rgba(201,169,110,0.35))" }}
+            style={{
+              filter: "drop-shadow(0 0 40px rgba(201,169,110,0.5)) drop-shadow(0 0 80px rgba(201,169,110,0.25)) drop-shadow(0 0 120px rgba(139,105,20,0.2))",
+              animation: "logoGlow 3s ease-in-out infinite alternate",
+            }}
           />
         </div>
 
