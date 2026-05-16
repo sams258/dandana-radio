@@ -102,11 +102,12 @@ export function HeroSection() {
         {/* Logo */}
         <div style={{ width: "100%", maxWidth: "800px", margin: "0 auto 2.5rem auto", padding: "0 1rem" }}>
           <Image
-            src="/logo.png"
+            src="/dandana2.png"
             alt="Radio Dandana"
             width={800}
             height={430}
             priority
+            unoptimized
             className="w-full h-auto object-contain"
             style={{ filter: "drop-shadow(0 0 80px rgba(201,169,110,0.35))" }}
           />

@@ -19,7 +19,7 @@ export function AboutSection() {
     >
       <div className="divider-gold mb-16" />
 
-      <div className="md:flex-row" style={{ display: "flex", flexDirection: "column", gap: "2rem", alignItems: "center" }}>
+      <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
         {/* Mic icon ornament */}
         <div
           className="shrink-0 w-28 h-28 rounded-full flex items-center justify-center"
@@ -27,6 +27,7 @@ export function AboutSection() {
             background: "radial-gradient(circle, rgba(139,105,20,0.2), rgba(8,8,8,0.8))",
             border: "1px solid rgba(201,169,110,0.2)",
             boxShadow: "0 0 40px rgba(139,105,20,0.12)",
+            marginTop: "1.5rem",
           }}
         >
           <Mic size={44} style={{ color: "var(--gold-mid)" }} />
