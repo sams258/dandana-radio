@@ -79,9 +79,9 @@ export function RadioPlayer() {
                   <Image
                     src="/logo.png"
                     alt="Radio Dandana"
-                    width={80}
-                    height={80}
-                    className="object-contain p-1 opacity-80"
+                    width={70}
+                    height={40}
+                    className="object-contain p-2 opacity-75"
                   />
                 </div>
               )}

@@ -101,15 +101,15 @@ export function HeroSection() {
       <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-8 max-w-3xl mx-auto">
         {/* Logo */}
         <div
-          className="mb-8 animate-fade-in"
+          className="mb-6 animate-fade-in"
           style={{ animationDelay: "0.1s", animationFillMode: "both" }}
         >
           <Image
             src="/logo.png"
             alt="Radio Dandana"
-            width={200}
+            width={340}
             height={200}
-            className="mx-auto drop-shadow-[0_0_40px_rgba(201,169,110,0.3)]"
+            className="mx-auto object-contain drop-shadow-[0_0_60px_rgba(201,169,110,0.25)]"
             priority
           />
         </div>
@@ -144,37 +144,37 @@ export function HeroSection() {
 
         {/* CTA buttons */}
         <div
-          className="flex flex-row gap-4 justify-center mt-10 animate-fade-up"
+          className="flex flex-row flex-wrap gap-5 justify-center mt-12 animate-fade-up"
           style={{ animationDelay: "0.7s", animationFillMode: "both" }}
         >
           <a
             href="#player"
-            className={`px-8 py-3 rounded-full font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 ${
-              lang === "ar" ? "font-arabic" : ""
-            }`}
+            className="px-10 py-4 rounded-full font-semibold text-base min-w-[180px] text-center transition-all duration-300 hover:scale-105"
             style={{
               background: "linear-gradient(135deg, var(--gold-deep) 0%, var(--gold-mid) 50%, var(--gold-light) 100%)",
               color: "#080808",
-              boxShadow: "0 0 30px rgba(201,169,110,0.3), 0 4px 15px rgba(0,0,0,0.4)",
-              lineHeight: "1.5",
+              boxShadow: "0 0 40px rgba(201,169,110,0.35), 0 4px 20px rgba(0,0,0,0.4)",
               display: "inline-flex",
               alignItems: "center",
+              justifyContent: "center",
+              lineHeight: "1.4",
+              fontFamily: lang === "ar" ? "Cairo, sans-serif" : "inherit",
             }}
           >
             {t("hero.cta")}
           </a>
           <a
             href="#schedule"
-            className={`px-8 py-3 rounded-full text-sm md:text-base transition-all duration-300 hover:scale-105 ${
-              lang === "ar" ? "font-arabic" : ""
-            }`}
+            className="px-10 py-4 rounded-full text-base min-w-[180px] text-center transition-all duration-300 hover:scale-105"
             style={{
               color: "var(--gold-mid)",
-              border: "1px solid rgba(201,169,110,0.35)",
-              background: "rgba(201,169,110,0.05)",
-              lineHeight: "1.5",
+              border: "1.5px solid rgba(201,169,110,0.45)",
+              background: "rgba(201,169,110,0.06)",
               display: "inline-flex",
               alignItems: "center",
+              justifyContent: "center",
+              lineHeight: "1.4",
+              fontFamily: lang === "ar" ? "Cairo, sans-serif" : "inherit",
             }}
           >
             {t("hero.cta2")}

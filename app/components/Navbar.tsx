@@ -40,13 +40,13 @@ export function Navbar() {
     >
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-[72px]">
         {/* Logo */}
-        <a href="#hero" className="shrink-0 flex items-center gap-3 group">
+        <a href="#hero" className="shrink-0 flex items-center">
           <Image
             src="/logo.png"
             alt="Radio Dandana"
-            width={44}
+            width={120}
             height={44}
-            className="rounded-lg object-contain transition-opacity group-hover:opacity-90"
+            className="object-contain transition-opacity group-hover:opacity-90"
             priority
           />
         </a>
