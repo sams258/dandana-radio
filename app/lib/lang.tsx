@@ -68,7 +68,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "nav.contact":     "Contact",
     "nav.listen":      "Listen Now",
 
-    "hero.tagline":    "Music That Lives in the Soul",
+    "hero.tagline":    "Dandenha",
     "hero.subtitle":   "Authentic Arabic music — live 24 hours a day",
     "hero.cta":        "Listen Now",
     "hero.cta2":       "Explore Schedule",
