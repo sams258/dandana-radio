@@ -57,7 +57,6 @@ export function RadioPlayer() {
                   fill
                   className="object-cover"
                   onError={() => setImgError(true)}
-                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center"
