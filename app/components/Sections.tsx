@@ -90,15 +90,15 @@ export function ScheduleSection() {
         {t("schedule.title")}
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+      <div className="grid grid-cols-2 gap-3 w-full">
         {scheduleItems.map(({ key, timeKey, nameKey, Icon, gradient }) => (
           <div
             key={key}
-            className={`glass-card rounded-xl flex items-center gap-4 p-5 min-h-[80px] bg-gradient-to-br ${gradient} transition-all duration-300 hover:scale-[1.02]`}
+            className={`glass-card rounded-xl p-4 flex items-center gap-3 bg-gradient-to-br ${gradient} transition-all duration-300 hover:scale-[1.02]`}
             style={{ borderColor: "rgba(201,169,110,0.1)" }}
           >
             <div
-              className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
+              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
               style={{ background: "rgba(201,169,110,0.08)", border: "1px solid rgba(201,169,110,0.15)" }}
             >
               <Icon size={20} style={{ color: "var(--gold-mid)" }} />

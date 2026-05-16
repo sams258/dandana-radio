@@ -41,13 +41,13 @@ export function RadioPlayer() {
 
         <div className="p-6 md:p-8">
           {/* ── TOP ROW: Cover art + Now Playing info ── */}
-          <div className="flex gap-5 items-center mb-7">
+          <div className="flex gap-4 items-start mb-6">
             {/* Album art / logo fallback */}
             <div
-              className="relative shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden"
+              className="relative shrink-0 rounded-xl overflow-hidden"
               style={{
-                boxShadow:
-                  "0 0 0 1px rgba(201,169,110,0.2), 0 8px 24px rgba(0,0,0,0.6)",
+                width: "88px", height: "88px", minWidth: "88px",
+                boxShadow: "0 0 0 1px rgba(201,169,110,0.2), 0 8px 24px rgba(0,0,0,0.6)",
               }}
             >
               {np.coverUrl && !imgError ? (
