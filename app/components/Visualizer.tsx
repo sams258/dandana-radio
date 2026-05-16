@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 interface VisualizerProps {
   isPlaying: boolean;
@@ -8,14 +8,20 @@ interface VisualizerProps {
 }
 
 export function Visualizer({ isPlaying, barCount = 28 }: VisualizerProps) {
-  // Generate stable random delays and heights per bar
-  const bars = useMemo(() => {
-    return Array.from({ length: barCount }, (_, i) => ({
+  const [bars, setBars] = useState<{ delay: string; duration: string; maxH: number }[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const generated = Array.from({ length: barCount }, () => ({
       delay:    (Math.random() * 1.2).toFixed(2),
       duration: (0.5 + Math.random() * 0.8).toFixed(2),
       maxH:     Math.floor(20 + Math.random() * 80),
     }));
+    setBars(generated);
+    setMounted(true);
   }, [barCount]);
+
+  if (!mounted) return <div style={{ height: 40 }} aria-hidden="true" />;
 
   return (
     <div

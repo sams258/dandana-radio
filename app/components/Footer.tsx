@@ -24,7 +24,7 @@ export function Footer() {
         />
 
         <p
-          className={`text-sm ${lang === "ar" ? "font-arabic" : "font-display italic"}`}
+          className={`text-sm ${lang === "ar" ? "font-arabic" : ""}`}
           style={{ color: "var(--text-muted)" }}
         >
           {t("footer.tagline")}

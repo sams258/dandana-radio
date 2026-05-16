@@ -117,7 +117,7 @@ export function HeroSection() {
         {/* Main tagline */}
         <h1
           className={`text-5xl md:text-7xl font-light leading-tight mb-4 animate-fade-up ${
-            lang === "ar" ? "font-arabic" : "font-display italic"
+            lang === "ar" ? "font-arabic" : ""
           }`}
           style={{
             animationDelay: "0.3s",
@@ -130,7 +130,7 @@ export function HeroSection() {
         {/* Subtitle */}
         <p
           className={`text-base md:text-lg mb-10 max-w-md animate-fade-up ${
-            lang === "ar" ? "font-arabic" : "font-display"
+            lang === "ar" ? "font-arabic" : ""
           }`}
           style={{
             color: "var(--text-muted)",
@@ -163,7 +163,7 @@ export function HeroSection() {
           <a
             href="#schedule"
             className={`px-8 py-3.5 rounded-full text-sm md:text-base transition-all duration-300 hover:scale-105 ${
-              lang === "ar" ? "font-arabic" : "font-display"
+              lang === "ar" ? "font-arabic" : ""
             }`}
             style={{
               color: "var(--gold-mid)",

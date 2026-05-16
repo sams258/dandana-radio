@@ -58,7 +58,7 @@ export function Navbar() {
               <a
                 href={link.href}
                 className={`text-sm tracking-wide transition-colors duration-200 hover:text-gold-mid ${
-                  lang === "ar" ? "font-arabic" : "font-display"
+                  lang === "ar" ? "font-arabic" : ""
                 }`}
                 style={{
                   color: "var(--text-muted)",
@@ -139,7 +139,7 @@ export function Navbar() {
               key={link.key}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`text-base py-2 ${lang === "ar" ? "font-arabic text-right" : "font-display"}`}
+              className={`text-base py-2 ${lang === "ar" ? "font-arabic text-right" : ""}`}
               style={{ color: "var(--text-muted)" }}
             >
               {t(link.key)}

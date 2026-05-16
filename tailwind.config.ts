@@ -28,9 +28,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["Cormorant Garamond", "Georgia", "serif"],
+        DEFAULT: ["Cairo", "IBM Plex Sans Arabic", "sans-serif"],
         arabic:  ["Cairo", "IBM Plex Sans Arabic", "sans-serif"],
-        body:    ["Cormorant Garamond", "serif"],
       },
       animation: {
         "spin-slow":    "spin 8s linear infinite",

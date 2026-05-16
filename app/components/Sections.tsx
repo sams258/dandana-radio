@@ -36,14 +36,14 @@ export function AboutSection() {
           <h2
             id="about-heading"
             className={`text-3xl md:text-4xl font-light mb-5 ${
-              lang === "ar" ? "font-arabic" : "font-display italic"
+              lang === "ar" ? "font-arabic" : ""
             }`}
             style={{ color: "var(--gold-light)" }}
           >
             {t("about.title")}
           </h2>
           <p
-            className={`text-base leading-relaxed ${lang === "ar" ? "font-arabic" : "font-display"}`}
+            className={`text-base leading-relaxed ${lang === "ar" ? "font-arabic" : ""}`}
             style={{
               color: "var(--text-muted)",
               lineHeight: lang === "ar" ? "2.1" : "1.9",
@@ -83,7 +83,7 @@ export function ScheduleSection() {
       <h2
         id="schedule-heading"
         className={`text-3xl md:text-4xl font-light mb-10 text-center ${
-          lang === "ar" ? "font-arabic" : "font-display italic"
+          lang === "ar" ? "font-arabic" : ""
         }`}
         style={{ color: "var(--gold-light)" }}
       >
@@ -105,7 +105,7 @@ export function ScheduleSection() {
             </div>
             <div>
               <p
-                className={`font-medium mb-0.5 ${lang === "ar" ? "font-arabic text-base" : "font-display text-lg"}`}
+                className={`font-medium mb-0.5 ${lang === "ar" ? "font-arabic text-base" : "text-lg"}`}
                 style={{ color: "var(--gold-light)" }}
               >
                 {t(nameKey)}
@@ -148,7 +148,7 @@ export function ContactSection() {
     color: "var(--text-primary)",
     width: "100%",
     outline: "none",
-    fontFamily: lang === "ar" ? "Cairo, sans-serif" : "Cormorant Garamond, serif",
+    fontFamily: "Cairo, 'IBM Plex Sans Arabic', sans-serif",
     fontSize: lang === "ar" ? "0.95rem" : "1rem",
     lineHeight: lang === "ar" ? "1.8" : "1.6",
     transition: "border-color 0.2s",
@@ -164,7 +164,7 @@ export function ContactSection() {
       <h2
         id="contact-heading"
         className={`text-3xl md:text-4xl font-light mb-10 text-center ${
-          lang === "ar" ? "font-arabic" : "font-display italic"
+          lang === "ar" ? "font-arabic" : ""
         }`}
         style={{ color: "var(--gold-light)" }}
       >
