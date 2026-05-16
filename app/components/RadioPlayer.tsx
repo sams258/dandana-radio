@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Play, Square, Volume2, VolumeX, Users, Radio, RotateCcw } from "lucide-react";
+import { Play, Square, Volume2, VolumeX, Radio, RotateCcw } from "lucide-react";
 import { usePlayer } from "../hooks/usePlayer";
 import { useNowPlaying } from "../hooks/useNowPlaying";
 import { Visualizer } from "./Visualizer";
@@ -125,16 +125,6 @@ export function RadioPlayer() {
                 >
                   {t("player.live")}
                 </span>
-                {np.listeners > 0 && (
-                  <span
-                    className="flex items-center gap-1 ms-2"
-                    style={{ color: "var(--text-muted)", fontSize: "10px" }}
-                  >
-                    <Users size={10} />
-                    {np.listeners.toLocaleString(isAr ? "ar-EG" : "en-US")}{" "}
-                    {t("player.listeners")}
-                  </span>
-                )}
               </div>
 
               {/* "يُعزف الآن" label */}
@@ -181,14 +171,48 @@ export function RadioPlayer() {
                 </p>
               )}
 
-              {/* Up Next */}
-              {np.nextTitle && (
-                <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
-                  {lang === "ar" ? "التالي:" : "Up next:"}{" "}
-                  {np.nextArtist} — {np.nextTitle}
-                </p>
-              )}
             </div>
+          </div>
+
+          {/* Up Next row */}
+          <div style={{
+            display: np.nextTitle ? "flex" : "none",
+            alignItems: "center",
+            gap: "0.75rem",
+            padding: "0.65rem 1rem",
+            borderRadius: "10px",
+            background: "rgba(201,169,110,0.05)",
+            border: "1px solid rgba(201,169,110,0.12)",
+            marginBottom: "0.5rem",
+          }}>
+            <span style={{
+              fontSize: "0.7rem",
+              fontWeight: "600",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--gold-deep)",
+              whiteSpace: "nowrap",
+              fontFamily: "monospace",
+            }}>
+              {lang === "ar" ? "التالي" : "Up Next"}
+            </span>
+            <span style={{
+              width: "1px",
+              height: "14px",
+              background: "rgba(201,169,110,0.25)",
+              flexShrink: 0,
+            }} />
+            <span style={{
+              fontSize: "0.85rem",
+              color: "var(--text-muted)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              flex: 1,
+              fontFamily: lang === "ar" ? "Cairo, sans-serif" : "inherit",
+            }}>
+              {np.nextArtist ? `${np.nextArtist} — ${np.nextTitle}` : np.nextTitle}
+            </span>
           </div>
 
           {/* ROW 2 — Visualizer */}
