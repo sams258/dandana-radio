@@ -6,58 +6,58 @@ import { useLang } from "../lib/lang";
 
 export function HeroSection() {
   const { t, lang, dir } = useLang();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const notesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Animated particle/star field on canvas
+  // Flying music notes
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const container = notesContainerRef.current;
+    if (!container) return;
 
-    let width  = canvas.width  = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    const noteChars = ["♩", "♪", "♫", "♬", "𝄞", "𝄢", "♭", "♮", "♯"];
+    const notes: HTMLSpanElement[] = [];
 
-    const particles: { x: number; y: number; r: number; speed: number; opacity: number; dx: number; dy: number }[] = [];
-    for (let i = 0; i < 80; i++) {
-      particles.push({
-        x:       Math.random() * width,
-        y:       Math.random() * height,
-        r:       Math.random() * 1.5 + 0.3,
-        speed:   Math.random() * 0.3 + 0.1,
-        opacity: Math.random() * 0.5 + 0.1,
-        dx:      (Math.random() - 0.5) * 0.3,
-        dy:      -(Math.random() * 0.3 + 0.1),
-      });
-    }
+    function createNote() {
+      if (!container) return;
+      const note = document.createElement("span");
+      const char = noteChars[Math.floor(Math.random() * noteChars.length)];
+      note.textContent = char;
 
-    let raf: number;
-    function draw() {
-      ctx!.clearRect(0, 0, width, height);
-      for (const p of particles) {
-        ctx!.beginPath();
-        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx!.fillStyle = `rgba(201,169,110,${p.opacity})`;
-        ctx!.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.y < -5)  p.y = height + 5;
-        if (p.x < -5)  p.x = width + 5;
-        if (p.x > width + 5) p.x = -5;
+      const startX = Math.random() * 100;
+      const size = Math.random() * 18 + 10;
+      const duration = Math.random() * 12 + 10;
+      const delay = Math.random() * 8;
+      const opacity = Math.random() * 0.35 + 0.08;
+      const drift = (Math.random() - 0.5) * 120;
+
+      note.style.cssText = `
+        position: absolute;
+        left: ${startX}%;
+        bottom: -40px;
+        font-size: ${size}px;
+        color: var(--gold-mid);
+        opacity: 0;
+        pointer-events: none;
+        user-select: none;
+        animation: noteFloat ${duration}s ${delay}s ease-in infinite;
+        --drift: ${drift}px;
+        --opacity: ${opacity};
+      `;
+
+      container.appendChild(note);
+      notes.push(note);
+
+      if (notes.length > 35) {
+        const old = notes.shift();
+        old?.remove();
       }
-      raf = requestAnimationFrame(draw);
     }
-    draw();
 
-    const onResize = () => {
-      width  = canvas.width  = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", onResize);
+    const interval = setInterval(createNote, 600);
+    for (let i = 0; i < 18; i++) createNote();
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
+      clearInterval(interval);
+      notes.forEach(n => n.remove());
     };
   }, []);
 
@@ -68,12 +68,26 @@ export function HeroSection() {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       aria-label={lang === "ar" ? "القسم الرئيسي" : "Hero"}
     >
-      {/* Canvas stars */}
-      <canvas
-        ref={canvasRef}
+      <style>{`
+        @keyframes noteFloat {
+          0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+          10%  { opacity: var(--opacity); }
+          90%  { opacity: var(--opacity); }
+          100% { transform: translateY(-110vh) translateX(var(--drift)) rotate(25deg); opacity: 0; }
+        }
+      `}</style>
+
+      {/* Music notes container */}
+      <div
+        ref={notesContainerRef}
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full"
-        style={{ zIndex: 0 }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
       />
 
       {/* Radial gold glow */}
@@ -118,10 +132,7 @@ export function HeroSection() {
           className={`text-5xl md:text-7xl font-light leading-tight mb-4 animate-fade-up ${
             lang === "ar" ? "font-arabic" : ""
           }`}
-          style={{
-            animationDelay: "0.3s",
-            animationFillMode: "both",
-          }}
+          style={{ animationDelay: "0.3s", animationFillMode: "both" }}
         >
           <span className="shimmer-text">{t("hero.tagline")}</span>
         </h1>
@@ -143,12 +154,21 @@ export function HeroSection() {
 
         {/* CTA buttons */}
         <div
-          className="flex flex-row flex-wrap gap-5 justify-center mt-12 animate-fade-up"
-          style={{ animationDelay: "0.7s", animationFillMode: "both" }}
+          className="animate-fade-up"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+            justifyContent: "center",
+            marginTop: "2.5rem",
+            animationDelay: "0.7s",
+            animationFillMode: "both",
+          }}
         >
           <a
             href="#player"
-            className="px-10 py-4 rounded-full font-semibold text-base min-w-[180px] text-center transition-all duration-300 hover:scale-105"
+            className="no-underline px-10 py-4 rounded-full font-semibold text-base min-w-[180px] text-center transition-all duration-300 hover:scale-105"
             style={{
               background: "linear-gradient(135deg, var(--gold-deep) 0%, var(--gold-mid) 50%, var(--gold-light) 100%)",
               color: "#080808",
@@ -158,13 +178,15 @@ export function HeroSection() {
               justifyContent: "center",
               lineHeight: "1.4",
               fontFamily: lang === "ar" ? "Cairo, sans-serif" : "inherit",
+              textDecoration: "none",
+              textDecorationLine: "none",
             }}
           >
             {t("hero.cta")}
           </a>
           <a
             href="#schedule"
-            className="px-10 py-4 rounded-full text-base min-w-[180px] text-center transition-all duration-300 hover:scale-105"
+            className="no-underline px-10 py-4 rounded-full text-base min-w-[180px] text-center transition-all duration-300 hover:scale-105"
             style={{
               color: "var(--gold-mid)",
               border: "1.5px solid rgba(201,169,110,0.45)",
@@ -174,10 +196,84 @@ export function HeroSection() {
               justifyContent: "center",
               lineHeight: "1.4",
               fontFamily: lang === "ar" ? "Cairo, sans-serif" : "inherit",
+              textDecoration: "none",
+              textDecorationLine: "none",
             }}
           >
             {t("hero.cta2")}
           </a>
+        </div>
+
+        {/* Social icons */}
+        <div style={{ display: "flex", gap: "1.25rem", justifyContent: "center", marginTop: "2rem" }}>
+          {[
+            {
+              href: "https://www.facebook.com/sawalefkon/",
+              label: "Facebook",
+              svg: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                </svg>
+              ),
+            },
+            {
+              href: "https://www.tiktok.com/@dandana.radio",
+              label: "TikTok",
+              svg: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+                </svg>
+              ),
+            },
+            {
+              href: "https://www.instagram.com/dandana.radio",
+              label: "Instagram",
+              svg: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+                </svg>
+              ),
+            },
+          ].map(({ href, label, svg }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--gold-mid)",
+                border: "1.5px solid rgba(201,169,110,0.3)",
+                background: "rgba(201,169,110,0.06)",
+                transition: "all 0.25s ease",
+                textDecoration: "none",
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLAnchorElement;
+                el.style.background = "rgba(201,169,110,0.15)";
+                el.style.borderColor = "rgba(201,169,110,0.7)";
+                el.style.boxShadow = "0 0 18px rgba(201,169,110,0.3)";
+                el.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLAnchorElement;
+                el.style.background = "rgba(201,169,110,0.06)";
+                el.style.borderColor = "rgba(201,169,110,0.3)";
+                el.style.boxShadow = "none";
+                el.style.transform = "translateY(0)";
+              }}
+            >
+              {svg}
+            </a>
+          ))}
         </div>
 
         {/* Scroll hint */}
