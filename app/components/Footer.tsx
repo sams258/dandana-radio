@@ -11,16 +11,16 @@ export function Footer() {
   return (
     <footer
       dir={dir}
-      className="py-10 px-6 mt-8"
-      style={{ borderTop: "1px solid rgba(201,169,110,0.08)" }}
+      style={{ paddingTop: "3rem", paddingBottom: "3rem", paddingInline: "1.5rem", borderTop: "1px solid rgba(201,169,110,0.08)" }}
     >
-      <div className="max-w-4xl mx-auto flex flex-col items-center gap-5 text-center">
+      <div style={{ maxWidth: "600px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", textAlign: "center" }}>
         <Image
           src="/logo.png"
           alt="Radio Dandana"
-          width={56}
-          height={56}
-          className="opacity-60"
+          width={160}
+          height={86}
+          className="object-contain opacity-70 mx-auto"
+          style={{ width: "160px", height: "auto" }}
         />
 
         <p

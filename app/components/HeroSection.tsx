@@ -100,18 +100,18 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-8 max-w-3xl mx-auto">
         {/* Logo */}
-        <div
-          className="mb-6 animate-fade-in"
-          style={{ animationDelay: "0.1s", animationFillMode: "both" }}
-        >
-          <Image
-            src="/logo.png"
-            alt="Radio Dandana"
-            width={340}
-            height={200}
-            className="mx-auto object-contain drop-shadow-[0_0_60px_rgba(201,169,110,0.25)]"
-            priority
-          />
+        <div className="mb-10 w-full flex justify-center px-4">
+          <div style={{ position: "relative", width: "100%", maxWidth: "520px", height: "auto" }}>
+            <Image
+              src="/logo.png"
+              alt="Radio Dandana"
+              width={520}
+              height={280}
+              priority
+              className="w-full h-auto object-contain"
+              style={{ filter: "drop-shadow(0 0 60px rgba(201,169,110,0.3))" }}
+            />
+          </div>
         </div>
 
         {/* Main tagline */}

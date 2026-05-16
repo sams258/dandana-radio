@@ -27,7 +27,8 @@ export function RadioPlayer() {
   return (
     <section
       id="player"
-      className="w-full max-w-2xl mx-auto px-4 py-8"
+      className="w-full max-w-2xl mx-auto"
+      style={{ padding: "2rem 1.5rem" }}
       aria-label={isAr ? "مشغّل الراديو" : "Radio Player"}
     >
       <div
@@ -46,9 +47,9 @@ export function RadioPlayer() {
           }}
         />
 
-        <div className="p-6 md:p-8 flex flex-col gap-6">
+        <div style={{ padding: "2rem" }}>
           {/* ROW 1 — Album art + track info */}
-          <div className="flex flex-row gap-5 items-center">
+          <div style={{ display: "flex", flexDirection: "row", gap: "1.25rem", alignItems: "center", marginBottom: "1.5rem" }}>
             {/* Album art */}
             <div
               style={{
@@ -60,7 +61,7 @@ export function RadioPlayer() {
                 borderRadius: "12px",
                 overflow: "hidden",
                 flexShrink: 0,
-                boxShadow: "0 0 0 1px rgba(201,169,110,0.2), 0 8px 24px rgba(0,0,0,0.6)",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
               }}
             >
               {np.coverUrl && !imgError ? (
@@ -99,7 +100,7 @@ export function RadioPlayer() {
             </div>
 
             {/* Track info */}
-            <div className="flex flex-col gap-1 flex-1 min-w-0">
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minWidth: 0 }}>
               {/* LIVE badge row */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="relative flex items-center justify-center w-3 h-3">
@@ -192,14 +193,13 @@ export function RadioPlayer() {
 
           {/* ROW 2 — Visualizer */}
           <div
-            className="flex justify-center"
-            style={{ opacity: isPlaying ? 1 : 0.3, transition: "opacity 0.5s" }}
+            style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem", opacity: isPlaying ? 1 : 0.3, transition: "opacity 0.5s" }}
           >
             <Visualizer isPlaying={isPlaying} barCount={32} />
           </div>
 
           {/* ROW 3 — Controls */}
-          <div className="flex items-center gap-4">
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             {/* Play / Stop button */}
             <button
               onClick={isError ? play : togglePlay}

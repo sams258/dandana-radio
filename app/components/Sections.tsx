@@ -14,12 +14,12 @@ export function AboutSection() {
     <section
       id="about"
       dir={dir}
-      className="py-24 px-6 max-w-4xl mx-auto"
       aria-labelledby="about-heading"
+      style={{ paddingTop: "5rem", paddingBottom: "5rem", paddingInline: "clamp(1.5rem, 5vw, 3rem)", maxWidth: "900px", margin: "0 auto" }}
     >
       <div className="divider-gold mb-16" />
 
-      <div className="flex flex-col md:flex-row gap-12 items-center">
+      <div className="md:flex-row" style={{ display: "flex", flexDirection: "column", gap: "2rem", alignItems: "center" }}>
         {/* Mic icon ornament */}
         <div
           className="shrink-0 w-28 h-28 rounded-full flex items-center justify-center"
@@ -43,12 +43,8 @@ export function AboutSection() {
             {t("about.title")}
           </h2>
           <p
-            className={`text-base leading-relaxed ${lang === "ar" ? "font-arabic" : ""}`}
-            style={{
-              color: "var(--text-muted)",
-              lineHeight: lang === "ar" ? "2.1" : "1.9",
-              maxWidth: "560px",
-            }}
+            className={lang === "ar" ? "font-arabic" : ""}
+            style={{ lineHeight: "2.2", fontSize: "1.05rem", color: "var(--text-muted)", maxWidth: "560px" }}
           >
             {t("about.body")}
           </p>
@@ -77,8 +73,8 @@ export function ScheduleSection() {
     <section
       id="schedule"
       dir={dir}
-      className="py-16 px-6 max-w-4xl mx-auto"
       aria-labelledby="schedule-heading"
+      style={{ paddingTop: "4rem", paddingBottom: "4rem", paddingInline: "clamp(1.5rem, 5vw, 3rem)", maxWidth: "900px", margin: "0 auto" }}
     >
       <h2
         id="schedule-heading"
@@ -90,11 +86,12 @@ export function ScheduleSection() {
         {t("schedule.title")}
       </h2>
 
-      <div className="grid grid-cols-2 gap-3 w-full">
+      <div className="grid grid-cols-2 gap-4 w-full mt-8">
         {scheduleItems.map(({ key, timeKey, nameKey, Icon }) => (
           <div
             key={key}
-            className="glass-card rounded-xl p-5 flex items-center gap-4"
+            className="glass-card rounded-xl flex items-center"
+            style={{ padding: "1.25rem 1.5rem", gap: "1rem" }}
           >
             <div
               className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
@@ -159,8 +156,8 @@ export function ContactSection() {
     <section
       id="contact"
       dir={dir}
-      className="py-16 px-6 max-w-2xl mx-auto"
       aria-labelledby="contact-heading"
+      style={{ paddingTop: "4rem", paddingBottom: "6rem", paddingInline: "clamp(1.5rem, 5vw, 3rem)", maxWidth: "700px", margin: "0 auto" }}
     >
       <h2
         id="contact-heading"
@@ -175,9 +172,10 @@ export function ContactSection() {
       <div className="w-full max-w-xl mx-auto">
       <form
         onSubmit={handleSubmit}
-        className="glass-card rounded-2xl p-7 flex flex-col gap-4"
+        className="glass-card rounded-2xl flex flex-col gap-4"
+        style={{ padding: "2rem 2rem" }}
       >
-        <div className="flex flex-col gap-1.5 w-full">
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%" }}>
           <label
             htmlFor="contact-name"
             className={`text-sm ${lang === "ar" ? "font-arabic" : ""}`}
@@ -195,7 +193,7 @@ export function ContactSection() {
           />
         </div>
 
-        <div className="flex flex-col gap-1.5 w-full">
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%" }}>
           <label
             htmlFor="contact-email"
             className={`text-sm ${lang === "ar" ? "font-arabic" : ""}`}
@@ -214,7 +212,7 @@ export function ContactSection() {
           />
         </div>
 
-        <div className="flex flex-col gap-1.5 w-full">
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%" }}>
           <label
             htmlFor="contact-msg"
             className={`text-sm ${lang === "ar" ? "font-arabic" : ""}`}
@@ -234,15 +232,17 @@ export function ContactSection() {
 
         <button
           type="submit"
-          className={`py-3 px-8 rounded-xl font-semibold text-sm self-start mt-2 transition-all duration-300 hover:scale-[1.02] ${
-            lang === "ar" ? "font-arabic" : ""
-          }`}
           style={{
-            background: sent
-              ? "rgba(100,180,100,0.2)"
-              : "linear-gradient(135deg, var(--gold-deep), var(--gold-mid))",
+            padding: "12px 32px",
+            borderRadius: "12px",
+            fontWeight: "600",
+            fontSize: "0.95rem",
+            background: sent ? "rgba(100,180,100,0.2)" : "linear-gradient(135deg, var(--gold-deep), var(--gold-mid))",
             color: sent ? "#6db87a" : "#080808",
             border: sent ? "1px solid rgba(100,180,100,0.3)" : "none",
+            cursor: "pointer",
+            alignSelf: "flex-start",
+            marginTop: "8px",
           }}
         >
           {sent ? (lang === "ar" ? "✓ تم الإرسال" : "✓ Sent!") : t("contact.send")}

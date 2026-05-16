@@ -83,14 +83,32 @@ export function Navbar() {
           <button
             onClick={toggleLang}
             aria-label="Toggle language"
-            className="px-3 py-1.5 rounded-lg text-xs tracking-widest uppercase transition-all duration-200 font-mono focus:outline-none focus-visible:ring-1"
             style={{
-              color:   "var(--gold-mid)",
-              border:  "1px solid rgba(201,169,110,0.25)",
-              background: "rgba(201,169,110,0.04)",
+              padding: "6px 16px",
+              borderRadius: "20px",
+              fontSize: "0.8rem",
+              fontWeight: "600",
+              letterSpacing: "0.08em",
+              color: "var(--gold-mid)",
+              border: "1.5px solid rgba(201,169,110,0.4)",
+              background: "rgba(201,169,110,0.07)",
+              cursor: "pointer",
+              fontFamily: "Cairo, sans-serif",
+              transition: "all 0.2s",
+              whiteSpace: "nowrap",
+              minWidth: "52px",
+              textAlign: "center",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,169,110,0.15)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,169,110,0.7)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,169,110,0.07)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,169,110,0.4)";
             }}
           >
-            {lang === "ar" ? "EN" : "عر"}
+            {lang === "ar" ? "EN" : "عربي"}
           </button>
 
           {/* Listen Now CTA */}
@@ -112,18 +130,52 @@ export function Navbar() {
         <div className="flex md:hidden items-center gap-2">
           <button
             onClick={toggleLang}
-            className="px-2.5 py-1 rounded text-xs font-mono focus:outline-none"
-            style={{ color: "var(--gold-mid)", border: "1px solid rgba(201,169,110,0.25)" }}
+            aria-label="Toggle language"
+            style={{
+              padding: "6px 16px",
+              borderRadius: "20px",
+              fontSize: "0.8rem",
+              fontWeight: "600",
+              letterSpacing: "0.08em",
+              color: "var(--gold-mid)",
+              border: "1.5px solid rgba(201,169,110,0.4)",
+              background: "rgba(201,169,110,0.07)",
+              cursor: "pointer",
+              fontFamily: "Cairo, sans-serif",
+              transition: "all 0.2s",
+              whiteSpace: "nowrap",
+              minWidth: "52px",
+              textAlign: "center",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,169,110,0.15)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,169,110,0.7)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,169,110,0.07)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,169,110,0.4)";
+            }}
           >
-            {lang === "ar" ? "EN" : "عر"}
+            {lang === "ar" ? "EN" : "عربي"}
           </button>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
-            className="p-1.5 rounded focus:outline-none"
-            style={{ color: "var(--gold-mid)" }}
+            style={{
+              width: "38px",
+              height: "38px",
+              borderRadius: "10px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(201,169,110,0.07)",
+              border: "1.5px solid rgba(201,169,110,0.25)",
+              color: "var(--gold-mid)",
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
           >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </nav>
