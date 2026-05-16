@@ -38,14 +38,14 @@ export function Navbar() {
           : "1px solid transparent",
       }}
     >
-      <nav className="max-w-6xl mx-auto px-5 flex items-center justify-between h-[72px]">
+      <nav className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-[72px]">
         {/* Logo */}
         <a href="#hero" className="shrink-0 flex items-center gap-3 group">
           <Image
             src="/logo.png"
             alt="Radio Dandana"
-            width={52}
-            height={52}
+            width={44}
+            height={44}
             className="rounded-lg object-contain transition-opacity group-hover:opacity-90"
             priority
           />
@@ -78,7 +78,7 @@ export function Navbar() {
         </ul>
 
         {/* Right side: lang toggle + listen CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
           {/* Language toggle */}
           <button
             onClick={toggleLang}

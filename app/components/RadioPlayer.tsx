@@ -162,6 +162,13 @@ export function RadioPlayer() {
                   {np.artist}
                 </p>
               )}
+
+              {/* Up next */}
+              {np.nextTitle && (
+                <p style={{ color: "var(--text-subtle)", fontSize: "0.72rem", marginTop: "4px" }}>
+                  {lang === "ar" ? "التالي:" : "Up next:"} {np.nextArtist} {np.nextArtist && np.nextTitle ? "–" : ""} {np.nextTitle}
+                </p>
+              )}
             </div>
           </div>
 

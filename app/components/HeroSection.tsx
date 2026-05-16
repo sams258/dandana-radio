@@ -98,7 +98,7 @@ export function HeroSection() {
       />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-4xl mx-auto">
+      <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-8 max-w-3xl mx-auto">
         {/* Logo */}
         <div
           className="mb-8 animate-fade-in"
@@ -144,12 +144,12 @@ export function HeroSection() {
 
         {/* CTA buttons */}
         <div
-          className="flex flex-wrap gap-4 justify-center animate-fade-up"
+          className="flex flex-wrap gap-3 justify-center animate-fade-up"
           style={{ animationDelay: "0.7s", animationFillMode: "both" }}
         >
           <a
             href="#player"
-            className={`px-8 py-3.5 rounded-full font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 ${
+            className={`px-7 py-3 min-w-[140px] rounded-full font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 ${
               lang === "ar" ? "font-arabic" : ""
             }`}
             style={{
@@ -162,7 +162,7 @@ export function HeroSection() {
           </a>
           <a
             href="#schedule"
-            className={`px-8 py-3.5 rounded-full text-sm md:text-base transition-all duration-300 hover:scale-105 ${
+            className={`px-7 py-3 min-w-[140px] rounded-full text-sm md:text-base transition-all duration-300 hover:scale-105 ${
               lang === "ar" ? "font-arabic" : ""
             }`}
             style={{

@@ -21,26 +21,26 @@ const translations: Record<Lang, Record<string, string>> = {
     "nav.listen":      "استمع الآن",
 
     // Hero
-    "hero.tagline":    "الموسيقى التي تسكن الروح",
+    "hero.tagline":    "دندنها",
     "hero.subtitle":   "موسيقى عربية أصيلة — بث مباشر على مدار الساعة",
     "hero.cta":        "استمع الآن",
-    "hero.cta2":       "اكتشف البرامج",
+    "hero.cta2":       "البرامج",
 
     // Player
     "player.live":     "بث مباشر",
     "player.now":      "يُعزف الآن",
     "player.volume":   "مستوى الصوت",
-    "player.loading":  "جارٍ التحميل...",
+    "player.loading":  "جاري التحميل...",
     "player.error":    "تعذّر الاتصال بالبث",
     "player.retry":    "إعادة المحاولة",
     "player.listeners":"مستمع",
 
     // About
     "about.title":     "عن راديو دندنة",
-    "about.body":      "راديو دندنة هو محطتك المفضلة للموسيقى العربية الأصيلة والمعاصرة. نبثّ على مدار الساعة لنرافق لحظاتك بأجمل الألحان وأعذب الأصوات من مختلف أرجاء الوطن العربي.",
+    "about.body":      "راديو دندنة اذاعتك المفضلة للموسيقى العربية الأصيلة والمعاصرة. نبثّ على مدار الساعة لنرافق لحظاتك بأجمل الألحان وأعذب الأصوات من مختلف أرجاء الوطن العربي.",
 
     // Schedule
-    "schedule.title":  "البرامج والجدول",
+    "schedule.title":  "البرامج ",
     "schedule.morning":"صباح دندنة",
     "schedule.noon":   "نغمات الظهيرة",
     "schedule.evening":"أمسية طرب",
@@ -59,7 +59,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
     // Footer
     "footer.rights":   "جميع الحقوق محفوظة",
-    "footer.tagline":  "نغمة تجمعنا",
+    "footer.tagline":  "دندنها",
   },
   en: {
     "nav.home":        "Home",

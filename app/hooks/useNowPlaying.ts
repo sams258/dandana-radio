@@ -5,25 +5,22 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const POLL_MS = 15_000; // refresh every 15 seconds
 
 export interface NowPlayingData {
-  artist:    string;
-  title:     string;
-  album:     string;
-  coverUrl:  string | null;
-  listeners: number;
-  isLive:    boolean;
-  startTime: number | null; // epoch ms
-  duration:  number | null; // seconds
+  artist:     string;
+  title:      string;
+  album:      string;
+  duration:   string;
+  coverUrl:   string | null;
+  listeners:  number;
+  isLive:     boolean;
+  nextArtist: string;
+  nextTitle:  string;
+  recent:     { title: string; trackartist: string; tracktitle: string; started: string }[];
 }
 
 const FALLBACK: NowPlayingData = {
-  artist:    "Radio Dandana",
-  title:     "راديو دندنة",
-  album:     "",
-  coverUrl:  null,
-  listeners: 0,
-  isLive:    true,
-  startTime: null,
-  duration:  null,
+  artist: "Radio Dandana", title: "راديو دندنة", album: "",
+  duration: "", coverUrl: null, listeners: 0, isLive: true,
+  nextArtist: "", nextTitle: "", recent: [],
 };
 
 export function useNowPlaying() {
@@ -41,14 +38,16 @@ export function useNowPlaying() {
       const json = await res.json();
 
       setData({
-        artist:    json.artist,
-        title:     json.title,
-        album:     json.album,
-        coverUrl:  json.coverUrl,
-        listeners: json.listeners,
-        isLive:    json.isLive,
-        startTime: null,
-        duration:  null,
+        artist:     json.artist,
+        title:      json.title,
+        album:      json.album,
+        duration:   json.duration,
+        coverUrl:   json.coverUrl,
+        listeners:  json.listeners,
+        isLive:     json.isLive,
+        nextArtist: json.nextArtist,
+        nextTitle:  json.nextTitle,
+        recent:     json.recent ?? [],
       });
       setError(null);
     } catch (e) {

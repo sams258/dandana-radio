@@ -90,11 +90,11 @@ export function ScheduleSection() {
         {t("schedule.title")}
       </h2>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
         {scheduleItems.map(({ key, timeKey, nameKey, Icon, gradient }) => (
           <div
             key={key}
-            className={`glass-card rounded-xl p-5 flex items-center gap-4 bg-gradient-to-br ${gradient} transition-all duration-300 hover:scale-[1.02]`}
+            className={`glass-card rounded-xl flex items-center gap-4 p-5 min-h-[80px] bg-gradient-to-br ${gradient} transition-all duration-300 hover:scale-[1.02]`}
             style={{ borderColor: "rgba(201,169,110,0.1)" }}
           >
             <div
@@ -149,6 +149,7 @@ export function ContactSection() {
     width: "100%",
     outline: "none",
     fontFamily: "Cairo, 'IBM Plex Sans Arabic', sans-serif",
+    display: "block",
     fontSize: lang === "ar" ? "0.95rem" : "1rem",
     lineHeight: lang === "ar" ? "1.8" : "1.6",
     transition: "border-color 0.2s",
@@ -171,11 +172,12 @@ export function ContactSection() {
         {t("contact.title")}
       </h2>
 
+      <div className="w-full max-w-xl mx-auto">
       <form
         onSubmit={handleSubmit}
         className="glass-card rounded-2xl p-7 flex flex-col gap-4"
       >
-        <div>
+        <div className="w-full">
           <label
             htmlFor="contact-name"
             className={`block text-sm mb-1.5 ${lang === "ar" ? "font-arabic" : ""}`}
@@ -193,7 +195,7 @@ export function ContactSection() {
           />
         </div>
 
-        <div>
+        <div className="w-full">
           <label
             htmlFor="contact-email"
             className={`block text-sm mb-1.5 ${lang === "ar" ? "font-arabic" : ""}`}
@@ -212,7 +214,7 @@ export function ContactSection() {
           />
         </div>
 
-        <div>
+        <div className="w-full">
           <label
             htmlFor="contact-msg"
             className={`block text-sm mb-1.5 ${lang === "ar" ? "font-arabic" : ""}`}
@@ -246,6 +248,7 @@ export function ContactSection() {
           {sent ? (lang === "ar" ? "✓ تم الإرسال" : "✓ Sent!") : t("contact.send")}
         </button>
       </form>
+      </div>
     </section>
   );
 }

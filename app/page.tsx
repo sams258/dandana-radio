@@ -17,7 +17,7 @@ export default function Home() {
         {/* Player section — anchored below hero */}
         <section
           id="listen"
-          className="py-4 px-4"
+          className="py-8 px-4 sm:px-6"
           style={{ background: "linear-gradient(to bottom, var(--black-void), var(--black-deep))" }}
         >
           <RadioPlayer />

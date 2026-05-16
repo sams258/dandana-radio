@@ -11,6 +11,7 @@ type PlayerState = "idle" | "loading" | "playing" | "error";
 
 export function usePlayer() {
   const audioRef             = useRef<HTMLAudioElement | null>(null);
+  const stoppingRef          = useRef(false);
   const [state, setState]    = useState<PlayerState>("idle");
   const [volume, setVolume]  = useState(0.85);
   const [muted, setMuted]    = useState(false);
@@ -24,7 +25,10 @@ export function usePlayer() {
 
     const onPlaying = () => setState("playing");
     const onWaiting = () => setState("loading");
-    const onError   = () => setState("error");
+    const onError   = () => {
+      if (stoppingRef.current) return;
+      setState("error");
+    };
     const onStalled = () => setState("loading");
 
     audio.addEventListener("playing", onPlaying);
@@ -62,10 +66,12 @@ export function usePlayer() {
   const stop = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    stoppingRef.current = true;
     audio.pause();
     audio.src = "";
     audio.load();
     setState("idle");
+    setTimeout(() => { stoppingRef.current = false; }, 300);
   }, []);
 
   const togglePlay = useCallback(() => {
