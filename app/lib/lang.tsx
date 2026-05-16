@@ -28,7 +28,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
     // Player
     "player.live":     "بث مباشر",
-    "player.now":      "يُعزف الآن",
+    "player.now":      "على الهواء الآن",
     "player.volume":   "مستوى الصوت",
     "player.loading":  "جاري التحميل...",
     "player.error":    "تعذّر الاتصال بالبث",
