@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans+Arabic:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold-deep:    #8B6914;
+  --gold-mid:     #C9A96E;
+  --gold-light:   #E8D5A3;
+  --gold-shimmer: #F5ECD0;
+  --black-void:   #080808;
+  --black-deep:   #0D0D0D;
+  --black-card:   #131313;
+  --black-glass:  rgba(13,13,13,0.8);
+  --text-primary: #F0E6CC;
+  --text-muted:   #8A7A5A;
+  --text-subtle:  #3A3020;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--black-void);
+  color: var(--text-primary);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+
+[lang="ar"], .font-arabic {
+  font-family: 'Cairo', 'IBM Plex Sans Arabic', sans-serif;
+  line-height: 1.85;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.55;
+}
+
+.glass-card {
+  background: var(--black-glass);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(201,169,110,0.13);
+}
+
+.text-gold { color: var(--gold-mid); }
+
+.shimmer-text {
+  background: linear-gradient(90deg, var(--gold-mid) 0%, var(--gold-shimmer) 35%, var(--gold-mid) 55%, var(--gold-shimmer) 75%, var(--gold-mid) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 5s linear infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-deep), var(--gold-mid), var(--gold-deep), transparent);
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.85); opacity: 1; }
+  100% { transform: scale(2.4);  opacity: 0; }
+}
+.pulse-ring { animation: pulse-ring 2s ease-out infinite; }
+
+@keyframes bar-dance {
+  0%,100% { transform: scaleY(0.12); }
+  50%     { transform: scaleY(1);    }
+}
+.vis-bar { transform-origin: bottom; animation: bar-dance linear infinite; }
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track { overflow: hidden; }
+.marquee-inner { display: inline-block; animation: marquee 20s linear infinite; white-space: nowrap; }
+.marquee-inner:hover { animation-play-state: paused; }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 3px; border-radius: 2px;
+  background: var(--text-subtle); outline: none; cursor: pointer;
+  width: 100%;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--gold-mid); cursor: pointer;
+  box-shadow: 0 0 8px rgba(201,169,110,0.55);
+  transition: transform .15s, box-shadow .15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.35);
+  box-shadow: 0 0 16px rgba(201,169,110,0.85);
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black-deep); }
+::-webkit-scrollbar-thumb { background: var(--gold-deep); border-radius: 2px; }
