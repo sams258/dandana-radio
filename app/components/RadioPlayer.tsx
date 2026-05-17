@@ -101,9 +101,9 @@ export function RadioPlayer() {
             </div>
 
             {/* Track info */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minWidth: 0, alignItems: "flex-start" }}>
               {/* LIVE badge row */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "8px" }}>
                 <span className="relative flex items-center justify-center w-3 h-3">
                   <span
                     className="pulse-ring absolute inline-flex w-3 h-3 rounded-full"
@@ -130,16 +130,15 @@ export function RadioPlayer() {
               </div>
 
               {/* "يُعزف الآن" label */}
-              <p
-                dir="auto"
-                style={{
-                  color: "var(--text-muted)",
-                  fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
-                  fontSize: "10px",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                }}
-              >
+              <p style={{
+                fontSize: "10px",
+                textTransform: "uppercase",
+                letterSpacing: "0.15em",
+                color: "var(--text-muted)",
+                fontFamily: "monospace",
+                margin: 0,
+                direction: "ltr",
+              }}>
                 {t("player.now")}
               </p>
 
@@ -232,58 +231,72 @@ export function RadioPlayer() {
           </div>
 
           {/* ROW 3 — Controls */}
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "1rem", marginTop: "0.5rem" }}>
             {/* Play / Stop button */}
             <button
               onClick={isError ? play : togglePlay}
               disabled={isLoading}
               aria-label={isPlaying ? (isAr ? "إيقاف" : "Stop") : (isAr ? "تشغيل" : "Play")}
-              className="shrink-0 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               style={{
+                width: "68px",
+                height: "68px",
+                borderRadius: "50%",
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: isLoading ? "wait" : "pointer",
+                border: "1px solid rgba(201,169,110,0.3)",
+                transition: "all 0.3s ease",
                 background: isError
                   ? "rgba(180,60,60,0.15)"
                   : isLoading
                   ? "rgba(201,169,110,0.08)"
                   : isPlaying
                   ? "linear-gradient(135deg, var(--gold-deep), var(--gold-mid))"
-                  : "transparent",
+                  : "linear-gradient(135deg, var(--gold-mid), var(--gold-light))",
                 boxShadow: isPlaying
-                  ? "0 0 24px rgba(201,169,110,0.4), 0 4px 12px rgba(0,0,0,0.5)"
-                  : "0 4px 12px rgba(0,0,0,0.4)",
-                border: isError
-                  ? "1px solid rgba(180,60,60,0.3)"
-                  : isPlaying
-                  ? "1px solid rgba(201,169,110,0.3)"
-                  : "2px solid var(--gold-mid)",
+                  ? "0 0 28px rgba(201,169,110,0.45), 0 4px 16px rgba(0,0,0,0.5)"
+                  : "0 4px 16px rgba(0,0,0,0.4)",
+                color: isError ? "#c06060" : isLoading ? "var(--gold-mid)" : "#080808",
                 opacity: isLoading ? 0.7 : 1,
-                color: isError ? "#c06060" : isLoading ? "var(--gold-mid)" : isPlaying ? "#080808" : "var(--gold-mid)",
               }}
             >
               {isError ? (
-                <RotateCcw size={22} />
+                <RotateCcw size={24} />
               ) : isLoading ? (
-                <Radio size={22} className="animate-pulse" />
+                <Radio size={26} className="animate-pulse" />
               ) : isPlaying ? (
-                <Square size={20} fill="currentColor" />
+                <Square size={26} fill="currentColor" />
               ) : (
-                <Play size={22} fill="currentColor" className={isAr ? "" : "translate-x-0.5"} />
+                <Play size={28} fill="currentColor" />
               )}
             </button>
 
-            {/* Volume row */}
-            <div className="flex items-center gap-3 flex-1">
-              <button
-                onClick={toggleMute}
-                aria-label={muted ? (isAr ? "رفع كتم الصوت" : "Unmute") : (isAr ? "كتم الصوت" : "Mute")}
-                className="shrink-0 p-1.5 rounded-lg transition-colors focus:outline-none focus-visible:ring-1"
-                style={{
-                  color: muted ? "var(--text-muted)" : "var(--gold-mid)",
-                  background: "rgba(201,169,110,0.06)",
-                }}
-              >
-                {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
+            {/* Mute button + volume slider */}
+            <button
+              onClick={toggleMute}
+              aria-label={muted ? (isAr ? "رفع كتم الصوت" : "Unmute") : (isAr ? "كتم الصوت" : "Mute")}
+              style={{
+                flexShrink: 0,
+                width: "42px",
+                height: "42px",
+                borderRadius: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                background: "rgba(201,169,110,0.06)",
+                border: "1px solid rgba(201,169,110,0.15)",
+                color: muted ? "var(--text-muted)" : "var(--gold-mid)",
+                transition: "all 0.2s",
+              }}
+            >
+              {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </button>
 
+            <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
               <input
                 type="range"
                 min={0}
