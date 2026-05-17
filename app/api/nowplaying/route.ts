@@ -40,7 +40,18 @@ export async function GET() {
 
     const nextArtistRaw = nextAttrs.ARTIST ?? "";
     const nextTitleRaw  = nextAttrs.TITLE  ?? "";
-    const isNextJingle  = !nextArtistRaw || !nextTitleRaw || nextArtistRaw.toLowerCase().includes("dandana");
+    const nextCastTitle = (nextAttrs.CASTTITLE ?? "").toLowerCase();
+
+    const isNextJingle =
+      !nextArtistRaw ||
+      !nextTitleRaw  ||
+      nextArtistRaw.toLowerCase().includes("dandana") ||
+      nextTitleRaw.toLowerCase().includes("jingle")   ||
+      nextTitleRaw.toLowerCase().includes("promo")    ||
+      nextCastTitle.includes("jingle")                ||
+      nextCastTitle.includes("promo")                 ||
+      nextArtistRaw.toLowerCase().includes("jingle");
+
     const nextArtist = isNextJingle ? "" : nextArtistRaw;
     const nextTitle  = isNextJingle ? "" : nextTitleRaw;
 
