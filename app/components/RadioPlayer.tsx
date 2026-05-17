@@ -27,6 +27,7 @@ export function RadioPlayer() {
   return (
     <section
       id="player"
+      dir="ltr"
       className="w-full max-w-2xl mx-auto"
       style={{ padding: "2rem 1.5rem" }}
       aria-label={isAr ? "مشغّل الراديو" : "Radio Player"}
@@ -114,9 +115,10 @@ export function RadioPlayer() {
                   />
                 </span>
                 <span
+                  dir="auto"
                   style={{
                     color: "var(--gold-mid)",
-                    fontFamily: "monospace",
+                    fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
                     fontSize: "10px",
                     fontWeight: 600,
                     letterSpacing: "0.2em",
@@ -129,9 +131,10 @@ export function RadioPlayer() {
 
               {/* "يُعزف الآن" label */}
               <p
+                dir="auto"
                 style={{
                   color: "var(--text-muted)",
-                  fontFamily: "monospace",
+                  fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
                   fontSize: "10px",
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
@@ -145,8 +148,9 @@ export function RadioPlayer() {
                 <div className="marquee-track">
                   <div className="marquee-inner">
                     <span
-                      className={`text-lg font-semibold ${isAr ? "font-arabic" : ""}`}
-                      style={{ color: "var(--gold-light)" }}
+                      dir="auto"
+                      className="text-lg font-semibold"
+                      style={{ color: "var(--gold-light)", fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
                     >
                       {displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
@@ -154,8 +158,9 @@ export function RadioPlayer() {
                 </div>
               ) : (
                 <span
-                  className={`text-lg font-semibold truncate ${isAr ? "font-arabic" : ""}`}
-                  style={{ color: "var(--gold-light)" }}
+                  dir="auto"
+                  className="text-lg font-semibold truncate"
+                  style={{ color: "var(--gold-light)", fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
                 >
                   {displayTitle}
                 </span>
@@ -164,8 +169,9 @@ export function RadioPlayer() {
               {/* Artist name */}
               {np.artist && !isLoading && !isError && (
                 <p
-                  className={`text-sm ${isAr ? "font-arabic" : ""}`}
-                  style={{ color: "var(--text-muted)" }}
+                  dir="auto"
+                  className="text-sm"
+                  style={{ color: "var(--text-muted)", fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
                 >
                   {np.artist}
                 </p>
@@ -202,15 +208,18 @@ export function RadioPlayer() {
               background: "rgba(201,169,110,0.25)",
               flexShrink: 0,
             }} />
-            <span style={{
-              fontSize: "0.85rem",
-              color: "var(--text-muted)",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              flex: 1,
-              fontFamily: lang === "ar" ? "Cairo, sans-serif" : "inherit",
-            }}>
+            <span
+              dir="auto"
+              style={{
+                fontSize: "0.85rem",
+                color: "var(--text-muted)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                flex: 1,
+                fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
+              }}
+            >
               {np.nextArtist ? `${np.nextArtist} — ${np.nextTitle}` : np.nextTitle}
             </span>
           </div>

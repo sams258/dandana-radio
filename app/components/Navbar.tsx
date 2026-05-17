@@ -38,7 +38,7 @@ export function Navbar() {
           : "1px solid transparent",
       }}
     >
-      <nav className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-[72px]">
+      <nav className="max-w-6xl mx-auto flex items-center justify-between h-[72px]" style={{ paddingInline: "clamp(1.25rem, 4vw, 2.5rem)" }}>
         {/* Logo */}
         <a href="#hero" className="shrink-0 flex items-center">
           <Image
@@ -127,7 +127,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile: lang + burger */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="md:hidden" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <button
             onClick={toggleLang}
             aria-label="Toggle language"
@@ -182,17 +182,40 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div
-          className="md:hidden px-5 pb-5 pt-2 flex flex-col gap-3"
-          style={{ background: "rgba(8,8,8,0.97)", borderTop: "1px solid rgba(201,169,110,0.08)" }}
-        >
+        <div style={{
+          background: "rgba(8,8,8,0.97)",
+          borderTop: "1px solid rgba(201,169,110,0.12)",
+          padding: "1.25rem 1.5rem 1.75rem 1.5rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.25rem",
+        }}>
           {navLinks.map((link) => (
             <a
               key={link.key}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`text-base py-2 ${lang === "ar" ? "font-arabic text-right" : ""}`}
-              style={{ color: "var(--text-muted)" }}
+              style={{
+                padding: "0.85rem 1rem",
+                borderRadius: "10px",
+                color: "var(--text-muted)",
+                fontFamily: "Cairo, sans-serif",
+                fontSize: "1rem",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: lang === "ar" ? "flex-end" : "flex-start",
+                transition: "all 0.2s",
+                borderBottom: "1px solid rgba(201,169,110,0.06)",
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold-mid)";
+                (e.currentTarget as HTMLAnchorElement).style.background = "rgba(201,169,110,0.05)";
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
+                (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+              }}
             >
               {t(link.key)}
             </a>
@@ -200,10 +223,19 @@ export function Navbar() {
           <a
             href="#player"
             onClick={() => setMenuOpen(false)}
-            className="mt-2 text-center py-2.5 rounded-full text-sm font-semibold"
             style={{
+              marginTop: "0.75rem",
+              padding: "0.85rem 1.5rem",
+              borderRadius: "50px",
+              textAlign: "center",
+              fontFamily: "Cairo, sans-serif",
+              fontSize: "0.95rem",
+              fontWeight: "600",
+              textDecoration: "none",
               background: "linear-gradient(135deg, var(--gold-deep), var(--gold-mid))",
               color: "#080808",
+              boxShadow: "0 0 20px rgba(201,169,110,0.2)",
+              display: "block",
             }}
           >
             {t("nav.listen")}
