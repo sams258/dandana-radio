@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Play, Square, Volume2, VolumeX, Radio, RotateCcw } from "lucide-react";
 import { usePlayer } from "../hooks/usePlayer";
@@ -10,11 +10,71 @@ import { useLang } from "../lib/lang";
 
 export function RadioPlayer() {
   const { lang, t } = useLang();
-  const { volume, muted, togglePlay, toggleMute, handleVolumeChange, isPlaying, isLoading, isError, play } = usePlayer();
+  const { volume, muted, togglePlay, toggleMute, handleVolumeChange, isPlaying, isLoading, isError, play, stop } = usePlayer();
   const { data: np } = useNowPlaying();
   const [imgError, setImgError] = useState(false);
 
   const isAr = lang === "ar";
+
+  // Media Session — update metadata and playback state
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+
+    if (isPlaying) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title:  np.title  || "راديو دندنة",
+        artist: np.artist || "Radio Dandana",
+        album:  np.album  || "Radio Dandana",
+        artwork: np.coverUrl
+          ? [
+              { src: np.coverUrl, sizes: "512x512", type: "image/jpeg" },
+              { src: np.coverUrl, sizes: "256x256", type: "image/jpeg" },
+            ]
+          : [
+              { src: "/dandana2.png", sizes: "512x512", type: "image/png" },
+            ],
+      });
+      navigator.mediaSession.playbackState = "playing";
+    } else {
+      navigator.mediaSession.playbackState = isLoading ? "none" : "paused";
+    }
+  }, [isPlaying, isLoading, np.title, np.artist, np.album, np.coverUrl]);
+
+  // Media Session — OS action handlers (lock screen play/pause)
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+
+    navigator.mediaSession.setActionHandler("play", () => { play(); });
+    navigator.mediaSession.setActionHandler("pause", () => { stop(); });
+    navigator.mediaSession.setActionHandler("stop", () => { stop(); });
+
+    // Live radio — disable skip buttons on the OS
+    navigator.mediaSession.setActionHandler("previoustrack", null);
+    navigator.mediaSession.setActionHandler("nexttrack", null);
+    navigator.mediaSession.setActionHandler("seekbackward", null);
+    navigator.mediaSession.setActionHandler("seekforward", null);
+
+    return () => {
+      navigator.mediaSession.setActionHandler("play",  null);
+      navigator.mediaSession.setActionHandler("pause", null);
+      navigator.mediaSession.setActionHandler("stop",  null);
+    };
+  }, [play, stop]);
+
+  // Browser tab title — shows current track when playing
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    if (isPlaying && np.title && np.title !== "راديو دندنة") {
+      document.title = `${np.artist ? np.artist + " — " : ""}${np.title} | راديو دندنة`;
+    } else {
+      document.title = "Radio Dandana | راديو دندنة";
+    }
+
+    return () => {
+      document.title = "Radio Dandana | راديو دندنة";
+    };
+  }, [isPlaying, np.title, np.artist]);
 
   const displayTitle = isLoading
     ? t("player.loading")
