@@ -84,6 +84,23 @@ export async function GET() {
       isLive:     json?.live === true,
       nextArtist,
       nextTitle,
+      _playlist_debug: {
+        totalTracks: tracks.length,
+        upcomingCount: upcomingTracks.length,
+        first5Tracks: tracks.slice(0, 5).map(tr => ({
+          ARTIST:    tr.ARTIST,
+          TITLE:     tr.TITLE,
+          ITEMTYPE:  tr.ITEMTYPE,
+          CASTTITLE: tr.CASTTITLE,
+          STARTTIME: tr.STARTTIME,
+        })),
+        first3Upcoming: upcomingTracks.slice(0, 3).map(tr => ({
+          ARTIST:    tr.ARTIST,
+          TITLE:     tr.TITLE,
+          ITEMTYPE:  tr.ITEMTYPE,
+          CASTTITLE: tr.CASTTITLE,
+        })),
+      },
       recent: ((json?.recent as Record<string, string>[]) ?? []).filter((r) => {
         const hasTitle  = r.tracktitle  && r.tracktitle.trim()  !== "";
         const hasArtist = r.trackartist && r.trackartist.trim() !== "";
