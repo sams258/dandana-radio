@@ -6,6 +6,9 @@ const BASE_URL   = "https://c34.radioboss.fm";
 
 export const dynamic = "force-dynamic";
 
+let cachedNextArtist = "";
+let cachedNextTitle  = "";
+
 const FALLBACK = {
   artist: "Radio Dandana", title: "راديو دندنة", album: "",
   duration: "", coverUrl: null, listeners: 0, isLive: true,
@@ -38,8 +41,8 @@ export async function GET() {
     const fallbackArtist = nowplayingStr.split(" - ")[0] || "Radio Dandana";
     const fallbackTitle  = nowplayingStr.split(" - ").slice(1).join(" - ") || "راديو دندنة";
 
-    const nextArtistRaw = nextAttrs.ARTIST ?? "";
-    const nextTitleRaw  = nextAttrs.TITLE  ?? "";
+    const nextArtistRaw = nextAttrs.ARTIST   ?? "";
+    const nextTitleRaw  = nextAttrs.TITLE    ?? "";
     const nextCastTitle = (nextAttrs.CASTTITLE ?? "").toLowerCase();
 
     const isNextJingle =
@@ -52,8 +55,13 @@ export async function GET() {
       nextCastTitle.includes("promo")                 ||
       nextArtistRaw.toLowerCase().includes("jingle");
 
-    const nextArtist = isNextJingle ? "" : nextArtistRaw;
-    const nextTitle  = isNextJingle ? "" : nextTitleRaw;
+    if (!isNextJingle) {
+      cachedNextArtist = nextArtistRaw;
+      cachedNextTitle  = nextTitleRaw;
+    }
+
+    const nextArtist = isNextJingle ? cachedNextArtist : nextArtistRaw;
+    const nextTitle  = isNextJingle ? cachedNextTitle  : nextTitleRaw;
 
     return NextResponse.json({
       artist:    attrs.ARTIST    || fallbackArtist,
