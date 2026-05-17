@@ -268,7 +268,6 @@ export function RadioPlayer() {
               flexShrink: 0,
             }} />
             <span
-              dir="auto"
               style={{
                 fontSize: "0.85rem",
                 color: "var(--text-muted)",
@@ -277,6 +276,7 @@ export function RadioPlayer() {
                 whiteSpace: "nowrap",
                 flex: 1,
                 fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
+                direction: "auto" as React.CSSProperties["direction"],
               }}
             >
               {np.nextArtist ? `${np.nextArtist} — ${np.nextTitle}` : np.nextTitle}
