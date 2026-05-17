@@ -259,7 +259,7 @@ export function RadioPlayer() {
               whiteSpace: "nowrap",
               fontFamily: "monospace",
             }}>
-              {lang === "ar" ? "التالي" : "Up Next"}
+              {lang === "ar" ? "Next" : "Next"}
             </span>
             <span style={{
               width: "1px",
