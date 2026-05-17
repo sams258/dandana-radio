@@ -22,7 +22,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
     // Hero
     "hero.tagline":    "دندنها",
-    "hero.subtitle":   "موسيقى عربية أصيلة — بث مباشر على مدار الساعة",
+    "hero.subtitle":   "للموسيقى مساحة ،،، وللكلمة معنى",
     "hero.cta":        "استمع الآن",
     "hero.cta2":       "البرامج",
 
