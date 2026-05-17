@@ -6,32 +6,36 @@ const BASE_URL   = "https://c34.radioboss.fm";
 
 export const dynamic = "force-dynamic";
 
+const FALLBACK = {
+  artist: "Radio Dandana", title: "راديو دندنة", album: "",
+  duration: "", coverUrl: null, listeners: 0, isLive: true,
+  nextArtist: "", nextTitle: "", recent: [],
+};
+
 export async function GET() {
-  const url = `${BASE_URL}/api/info/${STATION_ID}?key=${API_KEY}`;
-
   try {
-    const res = await fetch(url, { cache: "no-store" });
-    const rawText = await res.text();
+    const [infoRes, playlistRes] = await Promise.all([
+      fetch(`${BASE_URL}/api/info/${STATION_ID}?key=${API_KEY}`, { cache: "no-store" }),
+      fetch(`${BASE_URL}/api/getplaylist/${STATION_ID}?key=${API_KEY}`, { cache: "no-store" }),
+    ]);
 
-    if (!res.ok) {
-      console.error("[/api/nowplaying] HTTP error", res.status, rawText.slice(0, 500));
-      return NextResponse.json({
-        artist: "Radio Dandana", title: "راديو دندنة", album: "",
-        duration: "", coverUrl: null, listeners: 0, isLive: true,
-        nextArtist: "", nextTitle: "", recent: [],
-      });
+    const infoText     = await infoRes.text();
+    const playlistText = await playlistRes.text();
+
+    let json: Record<string, unknown> = {};
+    let playlistJson: Record<string, unknown> = {};
+
+    try { json         = JSON.parse(infoText);     } catch { json = {}; }
+    try { playlistJson = JSON.parse(playlistText); } catch { playlistJson = {}; }
+
+    if (!infoRes.ok) {
+      console.error("[/api/nowplaying] HTTP error", infoRes.status, infoText.slice(0, 500));
+      return NextResponse.json(FALLBACK);
     }
 
-    let json: Record<string, unknown>;
-    try {
-      json = JSON.parse(rawText);
-    } catch {
-      console.error("[/api/nowplaying] JSON parse failed:", rawText.slice(0, 500));
-      return NextResponse.json({
-        artist: "Radio Dandana", title: "راديو دندنة", album: "",
-        duration: "", coverUrl: null, listeners: 0, isLive: true,
-        nextArtist: "", nextTitle: "", recent: [],
-      });
+    if (!json || Object.keys(json).length === 0) {
+      console.error("[/api/nowplaying] JSON parse failed:", infoText.slice(0, 500));
+      return NextResponse.json(FALLBACK);
     }
 
     const attrs         = (json?.currenttrack_info as Record<string, Record<string, string>>)?.["@attributes"] ?? {};
@@ -43,6 +47,33 @@ export async function GET() {
     const fallbackArtist = nowplayingStr.split(" - ")[0] || "Radio Dandana";
     const fallbackTitle  = nowplayingStr.split(" - ").slice(1).join(" - ") || "راديو دندنة";
 
+    // Find next real song from playlist — skip jingles/promos
+    const tracks = (playlistJson?.TRACK as Record<string, string>[] | undefined) ?? [];
+
+    const upcomingTracks = tracks.filter((tr) => {
+      const isUpcoming = tr.ITEMTYPE === "TRACK";
+      const hasArtist  = tr.ARTIST && tr.ARTIST.trim() !== "";
+      const hasTitle   = tr.TITLE  && tr.TITLE.trim()  !== "";
+      const castTitle  = (tr.CASTTITLE ?? "").toLowerCase();
+      const isJingle   = (
+        castTitle.includes("jingle") ||
+        castTitle.includes("promo")  ||
+        castTitle.includes("station id") ||
+        castTitle.includes("dandana radio") ||
+        (!hasArtist && !hasTitle)
+      );
+      return isUpcoming && !isJingle;
+    });
+
+    const nextRealTrack = upcomingTracks[0] ?? null;
+
+    const nextArtist = nextRealTrack?.ARTIST
+      || (nextAttrs.ARTIST && !nextAttrs.ARTIST.toLowerCase().includes("dandana radio") ? nextAttrs.ARTIST : "")
+      || "";
+    const nextTitle  = nextRealTrack?.TITLE
+      || (nextAttrs.TITLE && nextAttrs.ARTIST ? nextAttrs.TITLE : "")
+      || "";
+
     return NextResponse.json({
       artist:     attrs.ARTIST    || fallbackArtist,
       title:      attrs.TITLE     || fallbackTitle,
@@ -51,20 +82,20 @@ export async function GET() {
       coverUrl:   artworkUrl,
       listeners:  Number(json?.listeners ?? 0),
       isLive:     json?.live === true,
-      nextArtist: nextAttrs.ARTIST || "",
-      nextTitle:  nextAttrs.TITLE  || "",
-      recent: ((json?.recent as unknown[]) ?? []).filter((r: unknown) => {
-        const item = r as Record<string, string>;
-        return item.tracktitle && item.tracktitle.trim() !== "";
+      nextArtist,
+      nextTitle,
+      recent: ((json?.recent as Record<string, string>[]) ?? []).filter((r) => {
+        const hasTitle  = r.tracktitle  && r.tracktitle.trim()  !== "";
+        const hasArtist = r.trackartist && r.trackartist.trim() !== "";
+        const isJingle  = (r.trackartist ?? "").toLowerCase().includes("dandana radio") ||
+                          (r.tracktitle  ?? "").toLowerCase().includes("jingle")         ||
+                          (r.tracktitle  ?? "").toLowerCase().includes("promo");
+        return hasTitle && hasArtist && !isJingle;
       }),
     });
 
   } catch (err) {
     console.error("[/api/nowplaying]", err);
-    return NextResponse.json({
-      artist: "Radio Dandana", title: "راديو دندنة", album: "",
-      duration: "", coverUrl: null, listeners: 0, isLive: true,
-      nextArtist: "", nextTitle: "", recent: [],
-    });
+    return NextResponse.json(FALLBACK);
   }
 }
