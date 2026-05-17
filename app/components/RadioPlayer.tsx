@@ -300,50 +300,6 @@ export function RadioPlayer() {
             <WaveformAnimation />
           </div>
 
-          {/* Up Next row */}
-          <div style={{
-            display: np.nextTitle ? "flex" : "none",
-            alignItems: "center",
-            gap: "0.75rem",
-            padding: "0.65rem 1rem",
-            borderRadius: "10px",
-            background: "rgba(201,169,110,0.05)",
-            border: "1px solid rgba(201,169,110,0.12)",
-            marginBottom: "0.5rem",
-          }}>
-            <span style={{
-              fontSize: "0.7rem",
-              fontWeight: "600",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "var(--gold-deep)",
-              whiteSpace: "nowrap",
-              fontFamily: "monospace",
-            }}>
-              {lang === "ar" ? "Next" : "Next"}
-            </span>
-            <span style={{
-              width: "1px",
-              height: "14px",
-              background: "rgba(201,169,110,0.25)",
-              flexShrink: 0,
-            }} />
-            <span
-              style={{
-                fontSize: "0.85rem",
-                color: "var(--text-muted)",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                flex: 1,
-                fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
-                direction: "auto" as React.CSSProperties["direction"],
-              }}
-            >
-              {np.nextArtist ? `${np.nextArtist} — ${np.nextTitle}` : np.nextTitle}
-            </span>
-          </div>
-
           {/* ROW 2 — Visualizer */}
           <div
             style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem", opacity: isPlaying ? 1 : 0.3, transition: "opacity 0.5s" }}
