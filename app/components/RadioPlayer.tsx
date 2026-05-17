@@ -84,6 +84,55 @@ export function RadioPlayer() {
 
   const useMarquee = displayTitle.length > 30;
 
+  const WaveformAnimation = () => {
+    const bars = [
+      { delay: "0s",     height: "40%",  duration: "0.55s" },
+      { delay: "0.07s",  height: "75%",  duration: "0.62s" },
+      { delay: "0.13s",  height: "100%", duration: "0.48s" },
+      { delay: "0.04s",  height: "55%",  duration: "0.70s" },
+      { delay: "0.18s",  height: "85%",  duration: "0.53s" },
+      { delay: "0.09s",  height: "45%",  duration: "0.65s" },
+      { delay: "0.15s",  height: "90%",  duration: "0.58s" },
+      { delay: "0.03s",  height: "60%",  duration: "0.72s" },
+      { delay: "0.11s",  height: "70%",  duration: "0.50s" },
+      { delay: "0.20s",  height: "42%",  duration: "0.68s" },
+      { delay: "0.06s",  height: "80%",  duration: "0.60s" },
+      { delay: "0.16s",  height: "52%",  duration: "0.56s" },
+    ];
+
+    return (
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "3px",
+        height: "48px",
+        width: "64px",
+        flexShrink: 0,
+        opacity: isPlaying ? 1 : 0.2,
+        transition: "opacity 0.6s ease",
+      }}>
+        {bars.map((bar, i) => (
+          <div
+            key={i}
+            style={{
+              width: "3px",
+              height: bar.height,
+              borderRadius: "2px",
+              background: "linear-gradient(to top, var(--gold-deep), var(--gold-mid))",
+              transformOrigin: "bottom",
+              animation: isPlaying
+                ? `waveBar ${bar.duration} ${bar.delay} ease-in-out infinite alternate`
+                : "none",
+              transform: isPlaying ? undefined : "scaleY(0.15)",
+              transition: "transform 0.5s ease",
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <section
       id="player"
@@ -92,6 +141,15 @@ export function RadioPlayer() {
       style={{ padding: "2rem 1.5rem" }}
       aria-label={isAr ? "مشغّل الراديو" : "Radio Player"}
     >
+      <style>{`
+        @keyframes waveBar {
+          0%   { transform: scaleY(0.12); }
+          25%  { transform: scaleY(0.65); }
+          50%  { transform: scaleY(0.35); }
+          75%  { transform: scaleY(0.85); }
+          100% { transform: scaleY(1);    }
+        }
+      `}</style>
       <div
         className="glass-card rounded-2xl overflow-hidden"
         style={{
@@ -161,7 +219,7 @@ export function RadioPlayer() {
             </div>
 
             {/* Track info */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minWidth: 0, alignItems: "flex-start" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minWidth: 0, alignItems: "flex-start", overflow: "hidden" }}>
               {/* LIVE badge row */}
               <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "8px" }}>
                 <span className="relative flex items-center justify-center w-3 h-3">
@@ -237,6 +295,9 @@ export function RadioPlayer() {
               )}
 
             </div>
+
+            {/* Waveform */}
+            <WaveformAnimation />
           </div>
 
           {/* Up Next row */}
