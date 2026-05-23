@@ -138,7 +138,7 @@ export function RadioPlayer() {
       id="player"
       dir="ltr"
       className="w-full max-w-2xl mx-auto"
-      style={{ padding: "2rem 1.5rem" }}
+      style={{ padding: "2rem 1.5rem", minHeight: "160px" }}
       aria-label={isAr ? "مشغّل الراديو" : "Radio Player"}
     >
       <style>{`
@@ -155,6 +155,7 @@ export function RadioPlayer() {
         style={{
           boxShadow:
             "0 0 0 1px rgba(201,169,110,0.08), 0 24px 64px rgba(0,0,0,0.7), 0 0 80px rgba(139,105,20,0.08) inset",
+          minHeight: "200px",
         }}
       >
         {/* Gold top-edge accent */}
@@ -168,7 +169,7 @@ export function RadioPlayer() {
 
         <div style={{ padding: "2rem" }}>
           {/* ROW 1 — Album art + track info */}
-          <div style={{ display: "flex", flexDirection: "row", gap: "1.25rem", alignItems: "center", marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", flexDirection: "row", gap: "1.25rem", alignItems: "center", marginBottom: "1.5rem", minHeight: "88px" }}>
             {/* Album art */}
             <div
               style={{
@@ -219,7 +220,7 @@ export function RadioPlayer() {
             </div>
 
             {/* Track info */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minWidth: 0, alignItems: "flex-start", overflow: "hidden" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minWidth: 0, alignItems: "flex-start", overflow: "hidden", minHeight: "88px", justifyContent: "center" }}>
               {/* LIVE badge row */}
               <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "8px" }}>
                 <span className="relative flex items-center justify-center w-3 h-3">
@@ -262,12 +263,16 @@ export function RadioPlayer() {
 
               {/* Song title — marquee only if title > 30 chars */}
               {useMarquee ? (
-                <div className="marquee-track">
+                <div className="marquee-track" style={{ minHeight: "2.8rem" }}>
                   <div className="marquee-inner">
                     <span
                       dir="auto"
-                      className="text-lg font-semibold"
-                      style={{ color: "var(--gold-light)", fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
+                      style={{
+                        fontSize: "1.1rem",
+                        fontWeight: "600",
+                        color: "var(--gold-light)",
+                        fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
+                      }}
                     >
                       {displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
@@ -276,23 +281,33 @@ export function RadioPlayer() {
               ) : (
                 <span
                   dir="auto"
-                  className="text-lg font-semibold truncate"
-                  style={{ color: "var(--gold-light)", fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
+                  style={{
+                    fontSize: "1.1rem",
+                    fontWeight: "600",
+                    color: "var(--gold-light)",
+                    minHeight: "2.8rem",
+                    lineHeight: "1.4",
+                    display: "flex",
+                    alignItems: "center",
+                    overflow: "hidden",
+                    fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
+                  }}
                 >
                   {displayTitle}
                 </span>
               )}
 
-              {/* Artist name */}
-              {np.artist && !isLoading && !isError && (
-                <p
-                  dir="auto"
-                  className="text-sm"
-                  style={{ color: "var(--text-muted)", fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
-                >
-                  {np.artist}
-                </p>
-              )}
+              {/* Artist name — always rendered to hold line height */}
+              <p dir="auto" style={{
+                fontSize: "0.875rem",
+                color: "var(--text-muted)",
+                minHeight: "1.25rem",
+                lineHeight: "1.25rem",
+                fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
+                margin: 0,
+              }}>
+                {np.artist && !isLoading && !isError ? np.artist : " "}
+              </p>
 
             </div>
 

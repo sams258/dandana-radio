@@ -1,11 +1,11 @@
 "use client";
 
-import { LangProvider } from "./lib/lang";
-import { Navbar } from "./components/Navbar";
-import { HeroSection } from "./components/HeroSection";
-import { RadioPlayer } from "./components/RadioPlayer";
-import { AboutSection, ScheduleSection, ContactSection } from "./components/Sections";
-import { Footer } from "./components/Footer";
+import { LangProvider } from "../lib/lang";
+import { Navbar } from "../components/Navbar";
+import { HeroSection } from "../components/HeroSection";
+import { RadioPlayer } from "../components/RadioPlayer";
+import { AboutSection, ScheduleSection, ContactSection } from "../components/Sections";
+import { Footer } from "../components/Footer";
 
 export default function Home() {
   return (
