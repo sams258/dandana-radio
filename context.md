@@ -53,10 +53,12 @@ dandana-radio/
 │   │   ├── layout.tsx                    # Site layout: metadata, Google Fonts, html/body
 │   │   ├── page.tsx                      # Radio home page (/, untouched)
 │   │   ├── lib/
-│   │   │   └── payload.ts                # Data access layer: all Payload queries + inline types
+│   │   │   ├── payload.ts                # Data access layer: all Payload queries + inline types
+│   │   │   └── splitBodyForAd.ts         # Splits Lexical body at first paragraph for ad injection
 │   │   ├── components/
 │   │   │   └── news/
 │   │   │       ├── ArticleCard.tsx        # Article card (client component)
+│   │   │       ├── GalleryBlock.tsx       # Image gallery with thumbnail strip (client component)
 │   │   │       ├── NewsNav.tsx            # Sticky news nav with categories + lang toggle (client)
 │   │   │       └── RichTextRenderer.tsx   # Lexical JSON → React renderer (client component)
 │   │   ├── news/                          # Arabic news pages (no /ar/ prefix)
@@ -586,6 +588,17 @@ Pre-rendered slugs at last build:
 | Phase 2A — Payload CMS collections | complete | `fb9aa9b`, `5e25c1b` |
 | Phase 2B — News public frontend | complete | `09f751b` |
 | Phase 1 Ads — Advertising system collections + components | complete | `4950488` |
+| Phase 2A Advertising — Wire placements into news frontend | complete | — |
+
+**Phase 2A Advertising — complete**
+- RichTextRenderer converted to server component
+- GalleryBlock.tsx extracted (client component) to enable the server conversion
+- locale prop threaded through all 8 renderNode call sites
+- adBlock case added: renders AdSlot when placement.key is available, null otherwise
+- news_home_top wired above featured hero in /news and /en/news
+- news_article_after_intro wired via splitBodyForAd.ts in both article pages
+- app/(site)/lib/splitBodyForAd.ts: splits Lexical root.children at first paragraph node; returns { before, after: null } if no paragraph found or split would be the last node
+- Build: 20 pages clean, zero TypeScript errors
 
 **Next: Phase 2A Ads — Wire placements into news frontend**
 - `news_home_top` → `/news` and `/en/news` pages, above featured article section
