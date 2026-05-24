@@ -10,33 +10,44 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: "email",
     group: "System",
+    defaultColumns: ["email", "name", "role"],
   },
   access: {
     create: ({ req }) => {
       const email = (req.user?.email || "").toLowerCase();
-      return ALLOWED_EMAILS.includes(email);
+      const role = req.user?.role;
+      return ALLOWED_EMAILS.includes(email) && (role === "super-admin" || role === "admin");
     },
-    read: () => true,
+    read: ({ req }) => {
+      const role = req.user?.role;
+      if (role === "super-admin" || role === "admin") return true;
+      return { id: { equals: req.user?.id } };
+    },
     update: ({ req }) => {
-      const email = (req.user?.email || "").toLowerCase();
-      return ALLOWED_EMAILS.includes(email);
+      const role = req.user?.role;
+      return role === "super-admin" || role === "admin";
     },
-    delete: () => false,
+    delete: ({ req }) => req.user?.role === "super-admin",
   },
   fields: [
-    {
-      name: "name",
-      type: "text",
-      required: true,
-    },
+    { name: "name", type: "text", required: true },
     {
       name: "role",
       type: "select",
+      required: true,
+      defaultValue: "contributor",
       options: [
-        { label: "Admin", value: "admin" },
-        { label: "Editor", value: "editor" },
+        { label: "Super Admin",  value: "super-admin" },
+        { label: "Admin",        value: "admin" },
+        { label: "Editor",       value: "editor" },
+        { label: "Journalist",   value: "journalist" },
+        { label: "Contributor",  value: "contributor" },
       ],
-      defaultValue: "editor",
+      access: {
+        update: ({ req }) => req.user?.role === "super-admin",
+      },
     },
+    { name: "bio", type: "textarea", localized: true },
+    { name: "avatar", type: "upload", relationTo: "media" },
   ],
 };
