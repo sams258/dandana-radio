@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { AdBlock } from "../blocks/AdBlock";
 
 export const Pages: CollectionConfig = {
   slug: "pages",
@@ -79,6 +80,7 @@ export const Pages: CollectionConfig = {
             { name: "title", type: "text", localized: true },
           ],
         },
+        AdBlock,
       ],
     },
     {

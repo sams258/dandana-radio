@@ -7,6 +7,7 @@ import {
   UploadFeature,
   BlocksFeature,
 } from "@payloadcms/richtext-lexical";
+import { AdBlock } from "../blocks/AdBlock";
 
 export const Articles: CollectionConfig = {
   slug: "articles",
@@ -155,6 +156,7 @@ export const Articles: CollectionConfig = {
                           },
                         ],
                       },
+                      AdBlock,
                     ],
                   }),
                 ],

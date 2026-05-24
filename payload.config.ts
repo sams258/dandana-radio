@@ -11,6 +11,10 @@ import { Media } from "./payload/collections/Media";
 import { Articles } from "./payload/collections/Articles";
 import { Categories } from "./payload/collections/Categories";
 import { Tags } from "./payload/collections/Tags";
+import { Advertisers } from "./payload/collections/Advertisers";
+import { AdPlacements } from "./payload/collections/AdPlacements";
+import { Ads } from "./payload/collections/Ads";
+import { seedAdPlacements } from "./payload/seed/adPlacements";
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || process.env.NEXTAUTH_SECRET || "",
@@ -31,7 +35,7 @@ export default buildConfig({
     user: "users",
     meta: { titleSuffix: "— Dandana Radio CMS" },
   },
-  collections: [Users, Pages, Translations, Media, Articles, Categories, Tags],
+  collections: [Users, Pages, Translations, Media, Articles, Categories, Tags, Advertisers, AdPlacements, Ads],
   plugins: [
     s3Storage({
       collections: { media: true },
@@ -49,4 +53,7 @@ export default buildConfig({
     }),
   ],
   typescript: { outputFile: "payload-types.ts" },
+  onInit: async (payload) => {
+    await seedAdPlacements(payload);
+  },
 });

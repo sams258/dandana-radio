@@ -70,8 +70,7 @@ dandana-radio/
 │   │           └── category/[slug]/page.tsx # /en/news/category/[slug] — category listing
 │   │
 │   ├── api/
-│   │   ├── nowplaying/route.ts            # RadioBoss metadata proxy (live stream)
-│   │   └── debug-r2/route.ts             # Diagnostic: reports which R2 env vars are set
+│   │   └── nowplaying/route.ts            # RadioBoss metadata proxy (live stream)
 │   ├── components/                        # Radio site components (untouched)
 │   │   ├── Footer.tsx
 │   │   ├── HeroSection.tsx
@@ -122,7 +121,6 @@ dandana-radio/
 | `/admin/[[...segments]]` | — | Payload CMS admin |
 | `/api/[...slug]` | — | Payload REST/GraphQL API |
 | `/api/nowplaying` | — | RadioBoss proxy |
-| `/api/debug-r2` | — | R2 env var diagnostic |
 
 **Rules:**
 - Arabic is the default — no `/ar/` prefix ever.
@@ -144,7 +142,7 @@ localization: {
 }
 ```
 
-**Collections registered:** Users, Pages, Translations, Media, Articles, Categories, Tags
+**Collections registered:** Users, Pages, Translations, Media, Articles, Categories, Tags, Advertisers, AdPlacements, Ads
 
 **Plugin:** `s3Storage` wired to the `media` collection. Requires these env vars (all currently `MISSING` in dev):
 
@@ -469,12 +467,10 @@ Pre-rendered slugs at last build:
 
 **`@payloadcms/plugin-seo` and `@payloadcms/plugin-nested-docs`** are installed but not added to `payload.config.ts` plugins array — available for future phases.
 
-**`debug-r2` route:** `app/api/debug-r2/route.ts` is a diagnostic endpoint — it reports which R2 env vars are set (not their values). Should be removed or auth-gated before production.
-
 **Why `RadioPlayer` has `dir="ltr"` always:** The player layout (art left, controls LTR) must not flip in RTL mode. Individual Arabic text spans inside use `dir="auto"`.
 
 **Why `stoppingRef` exists in `usePlayer`:** Clearing `audio.src` fires the audio `"error"` event internally. The ref prevents this from being mistaken for a genuine stream error.
 
 **Why news home pages are Dynamic (not SSG):** They use `searchParams` (for `?page=N` pagination), which forces dynamic rendering in Next.js App Router. All other news routes are SSG with 60s revalidation.
 
-**Uncommitted work:** All Phase 2A and 2B changes are unstaged — nothing has been committed or pushed yet.
+**Phase status:** Phase 2A and 2B complete and pushed. Phase 1 advertising system (collections, components, data layer) is complete but NOT YET committed.

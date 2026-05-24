@@ -72,7 +72,20 @@
       "Bash(curl -s http://localhost:3000/news/test-article)",
       "Bash(curl -s http://localhost:3000/news/category/radio-programs)",
       "Bash(curl -s http://localhost:3000/news)",
-      "Bash(kill 31213)"
+      "Bash(kill 31213)",
+      "Bash(npx tsc *)",
+      "Bash(npx tsx *)",
+      "Bash(curl -s -X POST http://localhost:3000/api/users/login -H 'Content-Type: application/json' -d '{\"email\":\"sam4studies@gmail.com\",\"password\":\"SamPass123!\"}')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; print\\(json.load\\(sys.stdin\\)\\)\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/api/ads/click/nonexistent-id)",
+      "Bash(curl -s \"http://localhost:3000/api/ad-placements?where[key][in][]=news_home_top\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Placement count:', d.get\\('totalDocs',0\\)\\)\")",
+      "Bash(kill %1)",
+      "Bash(curl -s \"http://localhost:3000/api/ad-placements\")",
+      "Bash(python3 -c ' *)",
+      "Bash(PGPASSWORD=npg_vXqkV8lb4NCO psql postgresql://neondb_owner@ep-misty-salad-alc79qk7-pooler.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require -c 'SELECT key, name, enabled FROM ad_placements ORDER BY key;')",
+      "Bash(curl *)"
     ]
   }
 }
