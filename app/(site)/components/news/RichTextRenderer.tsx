@@ -1,8 +1,7 @@
-"use client";
-
 import Image from "next/image";
-import { useState } from "react";
 import type { JSX } from "react";
+import { GalleryBlock } from "./GalleryBlock";
+import { AdSlot } from "../ads/AdSlot";
 
 // ── Custom Block Renderers ────────────────────────────────────
 
@@ -86,70 +85,6 @@ function VideoBlock({ fields }: { fields: Record<string, unknown> }) {
           fontFamily: "'Cairo', sans-serif",
         }}>
           {caption}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function GalleryBlock({ fields }: { fields: Record<string, unknown> }) {
-  const images  = fields.images as { image: Record<string, unknown>; caption?: string }[] | undefined;
-  const [active, setActive] = useState(0);
-
-  if (!images?.length) return null;
-  const current = images[active];
-  const imgUrl  = (current.image?.url || (current.image?.sizes as Record<string, unknown> | undefined)?.hero) as string;
-
-  return (
-    <div style={{ margin: "1.5rem 0" }}>
-      {/* Main image */}
-      <div style={{
-        position:     "relative",
-        height:       "360px",
-        borderRadius: "14px",
-        overflow:     "hidden",
-        marginBottom: "0.75rem",
-      }}>
-        <Image src={imgUrl} alt={current.caption || ""} fill className="object-cover" unoptimized />
-      </div>
-      {/* Thumbnails */}
-      {images.length > 1 && (
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          {images.map((img, i) => {
-            const thumbUrl = ((img.image?.sizes as Record<string, unknown> | undefined)?.thumbnail as Record<string, unknown> | undefined)?.url as string
-              || img.image?.url as string;
-            return (
-              <div
-                key={i}
-                onClick={() => setActive(i)}
-                style={{
-                  width:        "64px",
-                  height:       "64px",
-                  position:     "relative",
-                  borderRadius: "8px",
-                  overflow:     "hidden",
-                  cursor:       "pointer",
-                  border:       i === active
-                    ? "2px solid var(--gold-mid)"
-                    : "2px solid transparent",
-                  opacity:    i === active ? 1 : 0.6,
-                  transition: "all 0.2s",
-                }}
-              >
-                <Image src={thumbUrl} alt="" fill className="object-cover" unoptimized />
-              </div>
-            );
-          })}
-        </div>
-      )}
-      {current.caption && (
-        <p style={{
-          fontSize:   "0.8rem",
-          color:      "var(--text-muted)",
-          marginTop:  "0.5rem",
-          fontFamily: "'Cairo', sans-serif",
-        }}>
-          {current.caption}
         </p>
       )}
     </div>
@@ -240,7 +175,7 @@ function InfoBoxBlock({ fields }: { fields: Record<string, unknown> }) {
 
 // ── Node Renderer ─────────────────────────────────────────────
 
-function renderNode(node: Record<string, unknown>, index: number): React.ReactNode {
+function renderNode(node: Record<string, unknown>, index: number, locale: "ar" | "en"): React.ReactNode {
   const type = node.type as string;
 
   if (type === "text") {
@@ -263,7 +198,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
         fontFamily:   "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
         fontSize:     "1rem",
       }}>
-        {children?.map((child, i) => renderNode(child, i))}
+        {children?.map((child, i) => renderNode(child, i, locale))}
       </p>
     );
   }
@@ -282,7 +217,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
         fontFamily: "'Cairo', sans-serif",
         lineHeight: "1.4",
       }}>
-        {children?.map((child, i) => renderNode(child, i))}
+        {children?.map((child, i) => renderNode(child, i, locale))}
       </Tag>
     );
   }
@@ -297,7 +232,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
         color:              "var(--text-muted)",
         fontStyle:          "italic",
       }}>
-        {children?.map((child, i) => renderNode(child, i))}
+        {children?.map((child, i) => renderNode(child, i, locale))}
       </blockquote>
     );
   }
@@ -310,6 +245,15 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
     if (blockType === "imageGallery") return <GalleryBlock   key={index} fields={fields} />;
     if (blockType === "pullQuote")    return <PullQuoteBlock key={index} fields={fields} />;
     if (blockType === "infoBox")      return <InfoBoxBlock   key={index} fields={fields} />;
+    if (blockType === "adBlock") {
+      const placement = fields?.placement as Record<string, unknown> | string | null | undefined;
+      const placementKey =
+        typeof placement === "object" && placement !== null
+          ? (placement.key as string | undefined) ?? null
+          : null;
+      if (!placementKey) return null;
+      return <AdSlot key={index} placementKey={placementKey} locale={locale} />;
+    }
     return null;
   }
 
@@ -325,7 +269,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
         fontFamily:         "'Cairo', sans-serif",
         lineHeight:         "1.9",
       }}>
-        {children?.map((child, i) => renderNode(child, i))}
+        {children?.map((child, i) => renderNode(child, i, locale))}
       </Tag>
     );
   }
@@ -334,7 +278,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
     const children = node.children as Record<string, unknown>[];
     return (
       <li key={index}>
-        {children?.map((child, i) => renderNode(child, i))}
+        {children?.map((child, i) => renderNode(child, i, locale))}
       </li>
     );
   }
@@ -348,7 +292,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
         target="_blank" rel="noopener noreferrer"
         style={{ color: "var(--gold-mid)", textDecoration: "underline" }}
       >
-        {children?.map((child, i) => renderNode(child, i))}
+        {children?.map((child, i) => renderNode(child, i, locale))}
       </a>
     );
   }
@@ -356,7 +300,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
   // Fallback — render children if they exist
   const children = node.children as Record<string, unknown>[] | undefined;
   if (children?.length) {
-    return <div key={index}>{children.map((child, i) => renderNode(child, i))}</div>;
+    return <div key={index}>{children.map((child, i) => renderNode(child, i, locale))}</div>;
   }
 
   return null;
@@ -364,7 +308,7 @@ function renderNode(node: Record<string, unknown>, index: number): React.ReactNo
 
 // ── Main Export ────────────────────────────────────────────────
 
-export function RichTextRenderer({ content }: { content: Record<string, unknown> }) {
+export function RichTextRenderer({ content, locale }: { content: Record<string, unknown>; locale: "ar" | "en" }) {
   if (!content?.root) return null;
   const root     = content.root as Record<string, unknown>;
   const children = root.children as Record<string, unknown>[];
@@ -372,7 +316,7 @@ export function RichTextRenderer({ content }: { content: Record<string, unknown>
 
   return (
     <div style={{ maxWidth: "720px", margin: "0 auto" }}>
-      {children.map((node, i) => renderNode(node, i))}
+      {children.map((node, i) => renderNode(node, i, locale))}
     </div>
   );
 }

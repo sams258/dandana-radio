@@ -348,7 +348,102 @@ Article page layout: `dir="rtl"` (AR) / `dir="ltr"` (EN) → category badge + da
 
 ---
 
-## 7. RADIO SITE (Phase 1 — Untouched)
+## 7. ADVERTISING SYSTEM (Phase 1 Ads — complete, commit `4950488`)
+
+### Constants (`payload/constants/ads.ts`)
+
+Zero magic strings — all enum values exported as typed `as const` arrays:
+
+| Constant | Values |
+|----------|--------|
+| `AD_TYPES` | image, video, audio, text, embed |
+| `AD_STATUSES` | draft, active, paused, archived |
+| `AD_LOCALES` | ar, en, both |
+| `AD_LABEL_TYPES` | ad, sponsored, advertisement, custom |
+| `PAGE_SCOPES` | global, homepage, news_home, news_article, news_category |
+| `DEFAULT_SIZES` | leaderboard, mobile_leaderboard, rectangle, large_rectangle, halfpage, square, billboard, skyscraper, custom |
+| `ALLOWED_AD_EMBED_HOSTS` | securepubads.g.doubleclick.net, pagead2.googlesyndication.com |
+| `MOBILE_BREAKPOINT` | 768 |
+| `AD_LABEL_MAP` | Maps label type → `{ ar, en }` display strings |
+
+### Collections
+
+**Advertisers** (`payload/collections/Advertisers.ts`)
+- Slug: `advertisers`, group: Advertising
+- Fields: `name`, `slug` (auto-generated), `status`, `websiteUrl` (https:// validated), `contactName`, `contactEmail`, `logo` (media), `notes`, `createdBy`/`updatedBy` (sidebar, readOnly)
+- Access: create/update admin+; read editor+; delete super-admin
+
+**AdPlacements** (`payload/collections/AdPlacements.ts`)
+- Slug: `ad-placements`, group: Advertising
+- Fields: `name`, `key` (unique, `/^[a-z0-9_]+$/` validated), `description`, `allowedTypes` (multi-select), `defaultSize`, `width`/`height` (shown only when custom), `pageScope`, `maxAds` (1–10), `hideWhenEmpty`, `fallbackAd` (→ ads), `enabled`, `createdBy`/`updatedBy`
+- Access: create/update admin+; read editor+; delete super-admin
+- Note: `key` not truly readOnly after create (Payload v3 `admin.readOnly` is static only)
+
+**Ads** (`payload/collections/Ads.ts`)
+- Slug: `ads`, group: Advertising
+- Always-visible fields: `title`, `advertiser`, `type`, `status`, `locale`, `labelType`, `customLabelAr`/`En`, `clickUrl`, `openInNewTab`, `requiresConsent`
+- Conditional fields (by `type`): `media`, `mobileSrc`, `alt` (localized), `textContent` (localized), `embedProvider`, `embedUrl`
+- Scheduling: `startDate`, `endDate`
+- Audit sidebar: `createdBy`, `updatedBy`, `pausedAt`, `pausedBy`
+- `beforeChange` hook handles: audit fields, computed defaults on create, paused status transitions (sets/clears `pausedAt`+`pausedBy`), alt text validation
+- `embedUrl` field-level `validate` checks hostname against `ALLOWED_AD_EMBED_HOSTS`
+- Access: create/update admin+; read editor+; delete super-admin
+
+### Shared Block (`payload/blocks/AdBlock.ts`)
+
+- Slug: `adBlock`, registered in both Articles (Lexical `BlocksFeature`) and Pages (sections)
+- Fields: `placement` (→ ad-placements), `showLabel` (checkbox), `labelOverride` (localized)
+- Note: `RichTextRenderer` does not yet render `adBlock` nodes — to be added in Phase 2A ads
+
+### Data Access Layer (`app/(site)/lib/ads.ts`)
+
+Same pattern as `lib/payload.ts`. All queries use `overrideAccess: true` (ads collection is not publicly readable; server-side code applies its own constraints).
+
+**Exported types:** `Advertiser`, `Ad`, `AdPlacement`
+
+**Exported functions:**
+
+| Function | Purpose |
+|----------|---------|
+| `getAdsForPlacement({ key, locale, limit? })` | Finds placement by key, queries active ads filtered by locale, date window, allowedTypes. Returns `{ placement, ads }` or null |
+| `getPlacementByKey(key)` | Simple placement lookup by key |
+| `recordEligibility(adId, placementKey, locale)` | **No-op in Phase 1.** Phase 2 hook point — will write to AdEvents table |
+| `validateEmbedUrl(url)` | Returns true if URL hostname is in `ALLOWED_AD_EMBED_HOSTS` |
+
+`getAdsForPlacement` locale filtering: `ar` → `["ar","both"]`, `en` → `["en","both"]`. Date window uses `exists: false OR less_than_equal/greater_than_equal`.
+
+### Components (`app/(site)/components/ads/`)
+
+| Component | Type | Notes |
+|-----------|------|-------|
+| `AdWrapper.tsx` | server-safe | Renders `<div>` with 5 `data-*` attributes for Phase 2 IntersectionObserver |
+| `AdLabel.tsx` | server-safe | Reads `AD_LABEL_MAP`, renders locale-aware label above ad |
+| `AdSlot.tsx` | **server component** | Fetches via `getAdsForPlacement`, handles fallback + hideWhenEmpty, delegates to `AdRenderer` |
+| `AdRenderer.tsx` | `"use client"` | Random selection from eligible set via `useState` initializer; switches on `ad.type` |
+| `ImageAd.tsx` | client | Next.js `Image`, desktop/mobile src swap at `MOBILE_BREAKPOINT` via CSS class |
+| `TextAd.tsx` | client | Styled `Link` with text content |
+| `VideoAd.tsx` | client | `<video controls muted playsInline preload="metadata">` — no autoplay |
+| `AudioAd.tsx` | `"use client"` | Play button; `useRef<HTMLAudioElement>` for playback; `isRadioPlaying` prop for aria label |
+| `EmbedAd.tsx` | client | Validates URL client-side (duplicated logic — see known issues); sandboxed iframe without `allow-same-origin` |
+
+Click flow: all ad clicks go through `/api/ads/click/[id]` — never expose `clickUrl` directly in client HTML.
+
+### Click Route (`app/api/ads/click/[id]/route.ts`)
+
+GET handler. Validates: ad exists → status active → date window → clickUrl starts with `https://` → redirect 302. Returns 404/403/400 for invalid cases. Phase 2 adds click event logging before redirect.
+
+### Seeded Placements
+
+| key | description | size | page scope |
+|-----|-------------|------|------------|
+| `news_article_after_intro` | After first paragraph in article pages | rectangle (300×250) | news_article |
+| `news_home_top` | Top of news listing, above featured | leaderboard (728×90) | news_home |
+
+Seed runs via `payload.config.ts` `onInit` hook — idempotent, silently skips if tables not yet migrated.
+
+---
+
+## 8. RADIO SITE (Phase 0 — Untouched)
 
 The radio home page at `/` lives in `app/(site)/page.tsx` and uses components in `app/components/`. These files are **never modified** during news system work.
 
@@ -386,7 +481,7 @@ The radio home page at `/` lives in `app/(site)/page.tsx` and uses components in
 
 ---
 
-## 8. DESIGN SYSTEM
+## 9. DESIGN SYSTEM
 
 ### CSS Custom Properties (`app/globals.css`)
 
@@ -424,7 +519,7 @@ The radio home page at `/` lives in `app/(site)/page.tsx` and uses components in
 
 ---
 
-## 9. BUILD & DEPLOYMENT
+## 10. BUILD & DEPLOYMENT
 
 **Build:** `npm run build` — zero TypeScript errors required.
 
@@ -459,18 +554,50 @@ Pre-rendered slugs at last build:
 
 ---
 
-## 10. KNOWN ISSUES & DECISIONS
+## 11. KNOWN ISSUES & DECISIONS
 
-**`payload-types.ts` not generated:** `npx payload generate:types` crashes on Node 20 (undici `CacheStorage` incompatibility). The news data layer uses manually-written interfaces in `app/(site)/lib/payload.ts`. When this is resolved, replace those interfaces with the generated types and update the import.
+**`payload-types.ts` not generated:** `npx payload generate:types` crashes on Node 22 (Payload CLI + undici/CacheStorage incompatibility, open upstream issue). The news and ads data layers use manually-written interfaces in `lib/payload.ts` and `lib/ads.ts`. Replace with generated types when the upstream bug is resolved.
 
-**R2 env vars missing in dev:** All five R2 vars (`R2_BUCKET_NAME`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_URL`) are absent from `.env.local`. Media uploads return 500 in dev. Use `/api/debug-r2` to check var presence at runtime.
+**R2 env vars present in dev:** `R2_BUCKET_NAME`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_URL` are all set in `.env.local` (Cloudflare R2 bucket `dandana-media`). Media uploads work in dev.
 
-**`@payloadcms/plugin-seo` and `@payloadcms/plugin-nested-docs`** are installed but not added to `payload.config.ts` plugins array — available for future phases.
+**`AdPlacements.key` and `Advertisers.slug` not readOnly after create:** Payload v3's `admin.readOnly` is a static boolean — conditional readOnly (editable on create, locked after) requires a custom admin component. Mitigation: strong field description warns editors. Keys and slugs set correctly by the seed and by admin convention.
 
-**Why `RadioPlayer` has `dir="ltr"` always:** The player layout (art left, controls LTR) must not flip in RTL mode. Individual Arabic text spans inside use `dir="auto"`.
+**`validateEmbedUrl` duplicated in `EmbedAd.tsx`:** `lib/ads.ts` transitively imports Payload's Postgres adapter (server-only). Importing a runtime value from it in a client component would break client bundling. The 5-line pure function is duplicated in `EmbedAd.tsx` importing only `ALLOWED_AD_EMBED_HOSTS` from the constants file (no server deps). `lib/ads.ts` still exports `validateEmbedUrl` for server-side collection hook use.
+
+**`AdBlock` nodes not rendered in `RichTextRenderer`:** `RichTextRenderer.tsx` does not yet have a `case "adBlock"` handler. Inserting an AdBlock in an article body will silently skip the node. To be added in Phase 2A ads.
+
+**`@payloadcms/plugin-seo` and `@payloadcms/plugin-nested-docs`** installed but not added to `payload.config.ts` — available for future phases.
+
+**Why `RadioPlayer` has `dir="ltr"` always:** Player layout (art left, controls LTR) must not flip in RTL mode. Individual Arabic text spans inside use `dir="auto"`.
 
 **Why `stoppingRef` exists in `usePlayer`:** Clearing `audio.src` fires the audio `"error"` event internally. The ref prevents this from being mistaken for a genuine stream error.
 
 **Why news home pages are Dynamic (not SSG):** They use `searchParams` (for `?page=N` pagination), which forces dynamic rendering in Next.js App Router. All other news routes are SSG with 60s revalidation.
 
-**Phase status:** Phase 2A and 2B complete and pushed. Phase 1 advertising system (collections, components, data layer) is complete but NOT YET committed.
+**Why ad pages use `overrideAccess: true`:** The Ads collection's read access is restricted to editor+ roles. The server-side data layer applies its own constraints (status=active, date window, locale). `overrideAccess: true` bypasses collection ACL for trusted server code.
+
+---
+
+## 12. PHASE STATUS & NEXT STEPS
+
+| Phase | Status | Commit |
+|-------|--------|--------|
+| Phase 1 — Radio site | complete | `f791dfc` |
+| Phase 2A — Payload CMS collections | complete | `fb9aa9b`, `5e25c1b` |
+| Phase 2B — News public frontend | complete | `09f751b` |
+| Phase 1 Ads — Advertising system collections + components | complete | `4950488` |
+
+**Next: Phase 2A Ads — Wire placements into news frontend**
+- `news_home_top` → `/news` and `/en/news` pages, above featured article section
+- `news_article_after_intro` → `/news/[slug]` and `/en/news/[slug]`, after first rendered paragraph in `RichTextRenderer`
+- Add `adBlock` case to `RichTextRenderer.tsx`
+
+**Next: Phase 2B Ads — Impression + click logging**
+- New `AdEvents` Payload collection: `adId`, `placementKey`, `locale`, `event_type` (eligibility/impression/click), `timestamp`, `userAgent`, `ip` (hashed)
+- Implement `recordEligibility()` body in `lib/ads.ts`
+- Implement click logging in `/api/ads/click/[id]` before redirect
+
+**Next: Phase 2C Ads — Viewability tracking**
+- Client-side `IntersectionObserver` attached to all `[data-ad-id]` elements
+- IAB MRC standard: 50% of ad pixels visible for ≥1 second = impression
+- Fire `recordImpression()` server action on threshold crossing

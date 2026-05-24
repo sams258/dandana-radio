@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getFeaturedArticles, getArticles, getAllCategories } from "../lib/payload";
 import { ArticleCard } from "../components/news/ArticleCard";
 import { NewsNav } from "../components/news/NewsNav";
+import { AdSlot } from "../components/ads/AdSlot";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -41,6 +42,8 @@ export default async function NewsHomePage({
         margin:   "0 auto",
         padding:  "2rem clamp(1rem,4vw,2.5rem) 4rem",
       }}>
+
+        <AdSlot placementKey="news_home_top" locale="ar" />
 
         {/* Featured — magazine grid */}
         {featured.length > 0 && (

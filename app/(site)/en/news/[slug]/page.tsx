@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import { getArticleBySlug, getAllArticleSlugs, getAllCategories } from "../../../lib/payload";
 import { RichTextRenderer } from "../../../components/news/RichTextRenderer";
 import { NewsNav } from "../../../components/news/NewsNav";
+import { AdSlot } from "../../../components/ads/AdSlot";
+import { splitBodyForAd } from "../../../lib/splitBodyForAd";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -170,10 +172,17 @@ export default async function EnArticlePage({ params }: Props) {
           </div>
         )}
 
-        {/* Body */}
-        {article.body && (
-          <RichTextRenderer content={article.body as Record<string, unknown>} />
-        )}
+        {/* Body — split after first paragraph to insert ad */}
+        {article.body && (() => {
+          const { before, after } = splitBodyForAd(article.body as Record<string, unknown>);
+          return (
+            <>
+              <RichTextRenderer content={before} locale="en" />
+              <AdSlot placementKey="news_article_after_intro" locale="en" />
+              {after && <RichTextRenderer content={after} locale="en" />}
+            </>
+          );
+        })()}
 
         {/* Back link */}
         <div style={{ marginTop: "3rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(201,169,110,0.1)" }}>
