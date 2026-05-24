@@ -167,7 +167,13 @@ export const Articles: CollectionConfig = {
           fields: [
             { name: "category", type: "relationship", relationTo: "categories", required: true },
             { name: "tags", type: "relationship", relationTo: "tags", hasMany: true },
-            { name: "author", type: "relationship", relationTo: "users", required: true },
+            {
+              name: "author",
+              type: "relationship",
+              relationTo: "users",
+              required: true,
+              admin: { description: "Article author" },
+            },
           ],
         },
         {
