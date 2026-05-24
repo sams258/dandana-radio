@@ -430,6 +430,12 @@ Same pattern as `lib/payload.ts`. All queries use `overrideAccess: true` (ads co
 
 Click flow: all ad clicks go through `/api/ads/click/[id]` — never expose `clickUrl` directly in client HTML.
 
+**Modified files (dimension fix, commit `6185529`):**
+- `app/(site)/components/ads/AdSlot.tsx` — passes placement object to `AdRenderer`
+- `app/(site)/components/ads/AdRenderer.tsx` — extracts and forwards dimension props (`defaultSize`, `placementWidth`, `placementHeight`) to `ImageAd` and `TextAd`
+- `app/(site)/components/ads/ImageAd.tsx` — resolves and enforces placement dimensions; leaderboard `objectFit: contain`, others `cover`; falls back to unconstrained for custom size with no explicit w/h
+- `app/(site)/components/ads/TextAd.tsx` — enforces `maxWidth` from placement width
+
 ### Click Route (`app/api/ads/click/[id]/route.ts`)
 
 GET handler. Validates: ad exists → status active → date window → clickUrl starts with `https://` → redirect 302. Returns 404/403/400 for invalid cases. Phase 2 adds click event logging before redirect.
@@ -599,6 +605,11 @@ Pre-rendered slugs at last build:
 - news_article_after_intro wired via splitBodyForAd.ts in both article pages
 - app/(site)/lib/splitBodyForAd.ts: splits Lexical root.children at first paragraph node; returns { before, after: null } if no paragraph found or split would be the last node
 - Build: 20 pages clean, zero TypeScript errors
+- ImageAd constrained to placement dimensions via DEFAULT_SIZE_DIMENSIONS lookup
+- Leaderboard uses objectFit contain (no cropping), all other sizes use objectFit cover
+- TextAd wrapped in maxWidth container matching placement width
+- Placement object passed from AdSlot through AdRenderer to ImageAd and TextAd
+- Falls back to unconstrained rendering when defaultSize is custom with no explicit w/h
 
 **Next: Phase 2A Ads — Wire placements into news frontend**
 - `news_home_top` → `/news` and `/en/news` pages, above featured article section
