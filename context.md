@@ -7,18 +7,30 @@
 ## 1. PROJECT OVERVIEW
 
 **Name:** Radio Dandana / راديو دندنة  
-**Purpose:** A single-page bilingual (Arabic/English) live radio streaming website for an Arabic music station.  
+**Purpose:** Bilingual (Arabic/English) live radio streaming website + news system for an Arabic music station.  
 **Audience:** Arabic-speaking listeners; site defaults to Arabic, with a one-click toggle to English.  
-**Language:** TypeScript  
+**Language:** TypeScript (strict mode)  
 **Framework:** Next.js 16.2.6 (App Router, Turbopack)  
+**CMS:** Payload CMS 3.84.1 (embedded in the same Next.js app)  
+**Database:** PostgreSQL via `@payloadcms/db-postgres`  
 **Styling:** Tailwind CSS v4 + inline styles + CSS custom properties  
-**Key dependencies:**
-- `react` 19.2.4 / `react-dom` 19.2.4
-- `lucide-react` ^1.16.0 — icons
-- `framer-motion` ^12.38.0 — installed but not currently used in components
-- `tailwindcss` ^4, `@tailwindcss/postcss` ^4
+**Deployment:** Vercel, region `fra1` (Frankfurt)
 
-**Deployment target:** Vercel (`vercel.json` present), region `fra1` (Frankfurt).
+**Key dependencies:**
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `next` | 16.2.6 | Framework |
+| `react` / `react-dom` | 19.2.4 | UI |
+| `payload` | ^3.84.1 | Headless CMS |
+| `@payloadcms/db-postgres` | ^3.84.1 | DB adapter |
+| `@payloadcms/richtext-lexical` | ^3.84.1 | Lexical editor + renderer |
+| `@payloadcms/storage-s3` | ^3.84.1 | Cloudflare R2 media storage |
+| `@payloadcms/plugin-seo` | ^3.84.1 | Installed, not yet wired to config |
+| `@payloadcms/plugin-nested-docs` | ^3.84.1 | Installed, not yet wired to config |
+| `sharp` | ^0.34.5 | Image processing |
+| `lucide-react` | ^1.16.0 | Icons |
+| `framer-motion` | ^12.38.0 | Installed, not yet used |
 
 ---
 
@@ -27,392 +39,442 @@
 ```
 dandana-radio/
 ├── app/
+│   ├── (payload)/                        # Payload CMS routes (route group, no URL prefix)
+│   │   ├── admin/
+│   │   │   ├── [[...segments]]/
+│   │   │   │   ├── page.tsx              # Payload admin panel catch-all
+│   │   │   │   └── not-found.tsx
+│   │   │   ├── importMap.ts              # Manual import map for Payload client components
+│   │   │   └── importMap.js              # Auto-generated JS version (do not edit)
+│   │   ├── api/[...slug]/route.ts        # Payload REST + GraphQL API catch-all
+│   │   └── layout.tsx                    # Payload admin shell (RootLayout, server functions)
+│   │
+│   ├── (site)/                           # Public-facing site (route group, no URL prefix)
+│   │   ├── layout.tsx                    # Site layout: metadata, Google Fonts, html/body
+│   │   ├── page.tsx                      # Radio home page (/, untouched)
+│   │   ├── lib/
+│   │   │   └── payload.ts                # Data access layer: all Payload queries + inline types
+│   │   ├── components/
+│   │   │   └── news/
+│   │   │       ├── ArticleCard.tsx        # Article card (client component)
+│   │   │       ├── NewsNav.tsx            # Sticky news nav with categories + lang toggle (client)
+│   │   │       └── RichTextRenderer.tsx   # Lexical JSON → React renderer (client component)
+│   │   ├── news/                          # Arabic news pages (no /ar/ prefix)
+│   │   │   ├── page.tsx                   # /news — news home
+│   │   │   ├── [slug]/page.tsx            # /news/[slug] — article page
+│   │   │   └── category/[slug]/page.tsx   # /news/category/[slug] — category listing
+│   │   └── en/
+│   │       └── news/                      # English news pages
+│   │           ├── page.tsx               # /en/news — news home
+│   │           ├── [slug]/page.tsx         # /en/news/[slug] — article page
+│   │           └── category/[slug]/page.tsx # /en/news/category/[slug] — category listing
+│   │
 │   ├── api/
-│   │   └── nowplaying/
-│   │       └── route.ts          # Server-side API route: fetches RadioBoss metadata and returns sanitised JSON
-│   ├── components/
-│   │   ├── Footer.tsx            # Site footer with logo, tagline, copyright year
-│   │   ├── HeroSection.tsx       # Full-screen hero with animated logo, tagline, CTA buttons, social icons, music notes particle effect
-│   │   ├── Navbar.tsx            # Fixed top navigation with language toggle, desktop links, mobile hamburger menu
-│   │   ├── RadioPlayer.tsx       # The radio player card: album art, track info, waveform, visualizer bar, play/stop/mute/volume controls
-│   │   ├── Sections.tsx          # AboutSection, ScheduleSection, ContactSection — all three page sections in one file
-│   │   └── Visualizer.tsx        # Randomised animated bar visualizer used inside RadioPlayer
+│   │   ├── nowplaying/route.ts            # RadioBoss metadata proxy (live stream)
+│   │   └── debug-r2/route.ts             # Diagnostic: reports which R2 env vars are set
+│   ├── components/                        # Radio site components (untouched)
+│   │   ├── Footer.tsx
+│   │   ├── HeroSection.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── RadioPlayer.tsx
+│   │   ├── Sections.tsx
+│   │   └── Visualizer.tsx
 │   ├── hooks/
-│   │   ├── useNowPlaying.ts      # Polls /api/nowplaying every 15 s and exposes current track data
-│   │   └── usePlayer.ts          # Manages HTML5 Audio element lifecycle, stream play/stop, volume, mute state
+│   │   ├── useNowPlaying.ts
+│   │   └── usePlayer.ts
 │   ├── lib/
-│   │   └── lang.tsx              # LangProvider context + useLang hook + all Arabic/English translation strings
-│   ├── favicon.ico
-│   ├── globals.css               # CSS custom properties, global resets, utility classes, keyframe animations
-│   ├── layout.tsx                # Root layout: metadata, Google Fonts preload, html/body shell
-│   └── page.tsx                  # Root page: mounts LangProvider wrapping Navbar + all page sections
-├── public/
-│   ├── dandana1.png              # Original logo (not referenced in current code)
-│   ├── dandana2.png              # Transparent horizontal logo used in HeroSection
-│   ├── logo.png                  # Copy of transparent logo used in Navbar, RadioPlayer fallback art, Footer
-│   ├── logo1.png                 # Unused alternate logo file
-│   └── (next.svg, vercel.svg, file.svg, globe.svg, window.svg)  # Next.js scaffold assets, unused
-├── dandana2.png                  # Duplicate of public/dandana2.png at project root (unused by app)
-├── AGENTS.md                     # AI agent instructions (read Next.js docs before writing code)
-├── CLAUDE.md                     # Points to AGENTS.md
-├── next.config.ts                # Image remote patterns + device/image size config
-├── tailwind.config.ts            # Theme extension: gold/black/cream colour tokens, arabic font family, custom animations
-├── tsconfig.json                 # TypeScript config, strict mode, path alias @/*
-├── vercel.json                   # Vercel deployment config: region fra1, security headers, no-store on /api/*
-├── package.json                  # Scripts and dependencies
-├── postcss.config.mjs            # PostCSS with @tailwindcss/postcss
-└── eslint.config.mjs             # ESLint config
+│   │   └── lang.tsx
+│   ├── globals.css
+│   ├── layout.tsx                         # Root layout (unused — site uses (site)/layout.tsx)
+│   └── favicon.ico
+│
+├── payload/
+│   └── collections/
+│       ├── Users.ts
+│       ├── Media.ts
+│       ├── Pages.ts
+│       ├── Translations.ts
+│       ├── Articles.ts
+│       ├── Categories.ts
+│       └── Tags.ts
+│
+├── payload.config.ts                      # Payload config: DB, localization, collections, S3 plugin
+├── next.config.ts                         # withPayload wrapper + image remote patterns
+├── tailwind.config.ts
+├── tsconfig.json                          # strict: true, path alias @/*
+├── vercel.json                            # fra1 region, security headers, no-store on /api/*
+└── package.json
 ```
 
 ---
 
-## 3. STREAM & API CONFIGURATION
+## 3. ROUTING & LANGUAGE STRATEGY
 
-**Live stream URL** (from `usePlayer.ts`):
-```
-https://c34.radioboss.fm:9019/stream
-```
-A cache-busting timestamp query param (`?t=<Date.now()>`) is appended on every `play()` call to prevent stale stream buffers.
+| Route | Language | Renders |
+|-------|----------|---------|
+| `/` | Arabic (default) | Radio home page |
+| `/news` | Arabic | News home |
+| `/news/[slug]` | Arabic | Article |
+| `/news/category/[slug]` | Arabic | Category listing |
+| `/en/news` | English | News home |
+| `/en/news/[slug]` | English | Article |
+| `/en/news/category/[slug]` | English | Category listing |
+| `/admin/[[...segments]]` | — | Payload CMS admin |
+| `/api/[...slug]` | — | Payload REST/GraphQL API |
+| `/api/nowplaying` | — | RadioBoss proxy |
+| `/api/debug-r2` | — | R2 env var diagnostic |
 
-**RadioBoss API** (from `app/api/nowplaying/route.ts`):
-```
-Base URL:   https://c34.radioboss.fm
-Station ID: 1019
-API Key:    38D1T98921NV
+**Rules:**
+- Arabic is the default — no `/ar/` prefix ever.
+- English uses `/en/` prefix.
+- All article slugs are English-only clean strings (no Arabic characters in URLs).
+- The radio home page at `/` is completely separate from news and must never be touched.
+
+---
+
+## 4. PAYLOAD CMS
+
+### Configuration (`payload.config.ts`)
+
+```ts
+localization: {
+  locales: [{ label: "العربية", code: "ar" }, { label: "English", code: "en" }],
+  defaultLocale: "ar",
+  fallback: true,
+}
 ```
 
-**Endpoints called:**
+**Collections registered:** Users, Pages, Translations, Media, Articles, Categories, Tags
 
-| Endpoint | Purpose |
+**Plugin:** `s3Storage` wired to the `media` collection. Requires these env vars (all currently `MISSING` in dev):
+
+| Env var | Purpose |
+|---------|---------|
+| `R2_BUCKET_NAME` | Cloudflare R2 bucket |
+| `R2_ENDPOINT` | R2 endpoint URL |
+| `R2_ACCESS_KEY_ID` | R2 credentials |
+| `R2_SECRET_ACCESS_KEY` | R2 credentials |
+| `R2_PUBLIC_URL` | Public URL for served files |
+
+**Other required env vars:**
+
+| Env var | Purpose |
+|---------|---------|
+| `PAYLOAD_SECRET` | JWT signing secret |
+| `POSTGRES_URL` | PostgreSQL connection string |
+| `ALLOWED_EMAILS` | Comma-separated list of emails allowed to create users |
+
+**Note:** `payload-types.ts` is not generated (running `npx payload generate:types` fails on Node 20 due to undici/CacheStorage incompatibility). The news frontend uses manually-written inline interfaces in `app/(site)/lib/payload.ts` instead.
+
+### Admin Import Map (`app/(payload)/admin/importMap.ts`)
+
+Manually maintained — Payload cannot auto-generate this in this setup:
+
+```ts
+"@payloadcms/next/rsc#CollectionCards"
+"@payloadcms/storage-s3/client#S3ClientUploadHandler"
+"@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell"    // NOT RichTextCell
+"@payloadcms/richtext-lexical/rsc#RscEntryLexicalField"   // NOT RichTextField
+"@payloadcms/richtext-lexical/client#BlocksFeatureClient"
+```
+
+**Important:** `@payloadcms/richtext-lexical` v3.84.x exports `RscEntryLexicalCell` / `RscEntryLexicalField` from `/rsc`, not `RichTextCell` / `RichTextField` (the names that appear in older docs).
+
+---
+
+## 5. PAYLOAD COLLECTIONS
+
+### Users (`payload/collections/Users.ts`)
+- `auth: true` — handles login
+- `useAsTitle: "name"` (not email)
+- `ALLOWED_EMAILS` env var gates user creation
+- **5 roles** (role field only editable by `super-admin`):
+
+| Role | Value |
+|------|-------|
+| Super Admin | `super-admin` |
+| Admin | `admin` |
+| Editor | `editor` |
+| Journalist | `journalist` |
+| Contributor | `contributor` |
+
+- Fields: `name` (required), `role` (required, default `contributor`), `bio` (localized textarea), `avatar` (upload → media)
+- Access: super-admin/admin can read all users; others can only read themselves. Only super-admin can delete. Only super-admin can change roles.
+
+### Media (`payload/collections/Media.ts`)
+- Stored on Cloudflare R2 via `s3Storage` plugin (no local `staticDir`)
+- Image sizes: `thumbnail` (300×300), `hero` (1200×630), `logo` (400×400)
+- MIME types: `image/*`, `audio/*`, `video/*`
+- Fields: `alt` (localized), `caption` (localized), `usage` (select: logo/hero/article/audio/video/general)
+- Access: public read; any logged-in user can upload/update; only super-admin/admin can delete
+
+### Pages (`payload/collections/Pages.ts`)
+- Manages radio site page structure (hero, player, about, schedule, contact sections as blocks)
+- Currently admin-only; not yet wired to the front-end (radio page uses hardcoded components)
+- Fields: `title` (localized), `slug`, `sections` (blocks), `seo` group
+
+### Translations (`payload/collections/Translations.ts`)
+- Key-value store for all UI strings (nav, hero, player, about, schedule, contact, footer)
+- Fields: `key` (unique), `section` (select), `arabic` (textarea), `english` (textarea), `notes`
+- Currently admin-only; not yet wired to front-end (radio page uses `lang.tsx` hardcoded strings)
+
+### Categories (`payload/collections/Categories.ts`)
+- Group: News
+- Fields: `name` (localized, required), `slug` (unique, required), `description` (localized), `parent` (self-relation), `color` (hex string for badge)
+- Access: public read; editor+ can create/update; admin+ can delete
+- **4 categories pre-seeded in DB:** `music-news`, `artists`, `radio-programs`, `events`
+
+### Tags (`payload/collections/Tags.ts`)
+- Group: News
+- Fields: `name` (localized, required), `slug` (unique, required)
+- Access: public read; any logged-in user can create; editor+ can update; admin+ can delete
+
+### Articles (`payload/collections/Articles.ts`)
+- Group: News
+- Versioning: drafts with autosave every 2 s, max 20 versions per doc
+- **Tabs:** Content, Taxonomy, Publishing, SEO
+
+**Content tab fields:**
+- `title` (localized, required)
+- `slug` (unique; auto-generated from `title.en` or `title.ar` via `beforeValidate` hook if blank)
+- `excerpt` (localized textarea, required)
+- `featuredImage` (upload → media, required)
+- `body` (Lexical richText, localized, required) — see Lexical config below
+
+**Taxonomy tab fields:**
+- `category` → categories (required)
+- `tags` → tags (hasMany)
+- `author` → users (required; auto-set to current user via `beforeChange` hook if blank)
+
+**Publishing tab fields:**
+- `status` (select, default `draft`): draft / review / approved / published / rejected / archived
+  - journalists/contributors can only set draft or review
+- `publishedAt` (date with time picker; auto-set on publish if blank)
+- `featured` (checkbox) — surfaces article in news home hero grid
+- `rejectionNotes` (textarea, only visible when status = rejected)
+
+**SEO tab fields:** `metaTitle` (localized), `metaDescription` (localized), `ogImage` (upload → media)
+
+**Access:**
+- Public: only `status = published` articles
+- Logged-in: all articles
+- Update: editors+ can update anything; journalists/contributors can only update their own
+- Delete: admin+ only
+
+**Lexical body editor features:** headings (h2/h3/h4), blockquote, link, upload, and 5 custom blocks:
+
+| Block slug | Fields |
+|-----------|--------|
+| `audioEmbed` | `audio` (upload), `title` (localized), `description` (localized) |
+| `videoEmbed` | `url` (YouTube/Vimeo/MP4), `caption` (localized) |
+| `imageGallery` | `images` array: `image` (upload) + `caption` (localized), minRows: 2 |
+| `pullQuote` | `quote` (localized textarea, required), `attribution` (localized) |
+| `infoBox` | `title` (localized), `body` (localized textarea, required), `variant` (info/warning/success) |
+
+---
+
+## 6. NEWS FRONTEND (Phase 2B)
+
+### Data Access Layer (`app/(site)/lib/payload.ts`)
+
+All Payload queries go through this module. Uses `getPayload({ config: configPromise })` — instance is created per-call (Next.js caches at the request level). Types are hand-written interfaces (no generated `payload-types.ts`):
+
+```ts
+export interface Article { id, title, slug, excerpt, featuredImage, body,
+  category, tags, author, status, publishedAt, featured, metaTitle, metaDescription, ogImage }
+export interface Category { id, name, slug, description, color, parent }
+export interface Media { id, url, filename, alt, sizes: { thumbnail, hero, logo } }
+export interface User { id, name, email, role }
+export interface Tag { id, name, slug }
+```
+
+**Exported functions:**
+
+| Function | Purpose |
 |----------|---------|
-| `GET /api/info/1019?key=38D1T98921NV` | Current track, artist, album, artwork URL, live status, recent tracks list |
+| `getArticles({ page, category, locale })` | Paginated published articles (12/page) |
+| `getArticleBySlug(slug, locale)` | Single published article by slug |
+| `getFeaturedArticles(locale)` | Up to 5 featured published articles |
+| `getCategoryBySlug(slug, locale)` | Single category by slug |
+| `getAllCategories(locale)` | All categories (up to 100, sorted by name) |
+| `getAllArticleSlugs()` | All published article slugs (for `generateStaticParams`) |
+| `getAllCategorySlugs()` | All category slugs (for `generateStaticParams`) |
 
-**Poll interval:** 15 000 ms (15 seconds), set as `POLL_MS` constant in `useNowPlaying.ts`.
+All functions accept `locale: "ar" | "en"` (default `"ar"`). Localized fields are returned as resolved strings when a locale is specified.
 
-**API route behaviour:**
-- `export const dynamic = "force-dynamic"` — disables static caching for the route
-- Parses `currenttrack_info["@attributes"]` for artist/title/album/duration
-- Parses `links.artwork` for cover art URL
-- Falls back to splitting the `nowplaying` string on ` - ` if `currenttrack_info` is absent
-- Filters `recent[]` to remove entries where artist/title is blank or matches dandana radio / jingle / promo keywords
-- Returns a `FALLBACK` constant on any fetch or parse error
+### Components
 
----
+**`ArticleCard.tsx`** (`"use client"`)
+- Props: `article: Article`, `locale`, `featured?: boolean`
+- `featured` cards get `col-span-2 row-span-2`, taller image (340px vs 200px), more clamp lines
+- Category badge positioned top-right (AR) or top-left (EN) over the image
+- Uses `dir={locale === "ar" ? "rtl" : "ltr"}` on the `<Link>` wrapper
+- Date formatted with `ar-LB` or `en-GB` locale
 
-## 4. COMPONENTS
+**`NewsNav.tsx`** (`"use client"`)
+- Props: `locale`, `categories[]`, `activeCategory?: string`
+- Sticky, `z-index: 40`, `rgba(8,8,8,0.92)` + blur backdrop
+- Logo links back to `/` (radio site); divider; "الأخبار"/"News" link; category links; spacer; language toggle pill
+- Active category/news-home link styled gold, others muted
+- Language toggle: AR→`/en/news`, EN→`/news`
 
-### `Navbar.tsx`
-- **Renders:** Fixed top header with logo, desktop nav links, language toggle pill, "Listen Now" CTA button, mobile hamburger + slide-down menu.
-- **Hooks:** `useLang()` for translations and direction.
-- **State:** `scrolled` (boolean, set when `window.scrollY > 40`) changes background from transparent to `rgba(8,8,8,0.92)` with blur; `menuOpen` (boolean) toggles mobile menu.
-- **Nav links:** Home (`#hero`), About (`#about`), Schedule (`#schedule`), Contact (`#contact`).
-- **Language toggle:** Shows `"عربي"` when `lang === "en"` and `"EN"` when `lang === "ar"`.
+**`RichTextRenderer.tsx`** (`"use client"`)
+- Accepts `content: Record<string, unknown>` (the Lexical JSON `body` field)
+- Walks `content.root.children` recursively via `renderNode()`
+- Handles node types: `text` (with format bitmask bold/italic/underline/strikethrough), `paragraph`, `heading` (h2/h3/h4), `quote`, `list`, `listitem`, `link`, `block`
+- Dispatches blocks by `fields.blockType` to: `AudioBlock`, `VideoBlock`, `GalleryBlock`, `PullQuoteBlock`, `InfoBoxBlock`
+- `GalleryBlock` has interactive thumbnail strip (local `useState` for active index)
+- `VideoBlock` rewrites YouTube watch URLs to embed URLs
 
-### `HeroSection.tsx`
-- **Renders:** Full-screen section with animated logo, tagline (shimmer text), subtitle, two CTA buttons, social icon row, scroll hint line.
-- **Hooks:** `useLang()`.
-- **State:** `notesContainerRef` — a `useRef<HTMLDivElement>` pointing to the notes particle container.
-- **Key behaviour:**
-  - Dynamically creates `<span>` elements containing musical note characters (♩ ♪ ♫ ♬ 𝄞 𝄢 ♭ ♮ ♯) and appends them to the DOM container on a 600 ms interval. Up to 35 notes live at once; older ones are removed.
-  - Notes animate via `@keyframes noteFloat` (defined in an inline `<style>` tag inside the component) — float upward with random drift, fade in/out.
-  - Logo uses `@keyframes logoGlow` (also inline `<style>`) — alternates between two `drop-shadow` filter states over 3 s.
-  - Social links: Facebook (`https://www.facebook.com/sawalefkon/`), TikTok (`https://www.tiktok.com/@dandana.radio`), Instagram (`https://www.instagram.com/dandana.radio`).
-- **Image:** `/dandana2.png` with `unoptimized` prop, rendered at `width={800} height={430}`.
+### Pages
 
-### `RadioPlayer.tsx`
-- **Renders:** A `glass-card` player with three rows: (1) album art + track info + waveform animation, (2) bar visualizer, (3) play/stop button + mute button + volume slider.
-- **Hooks:** `useLang()`, `usePlayer()`, `useNowPlaying()`.
-- **State:** `imgError` (boolean) — falls back to logo when album art fails to load.
-- **Three `useEffect` calls for Media Session API:**
-  1. Updates `navigator.mediaSession.metadata` (title, artist, album, artwork) and `playbackState` whenever `isPlaying`, `isLoading`, or track data changes.
-  2. Registers OS action handlers (`play` → `play()`, `pause`/`stop` → `stop()`). Disables skip/seek buttons — appropriate for live radio.
-  3. Updates `document.title` to `"Artist — Title | راديو دندنة"` when playing a named track; resets to default otherwise.
-- **Display title logic:** Shows loading/error translation strings or `np.title`; falls back to `"Radio Dandana"`.
-- **Marquee:** Activated when `displayTitle.length > 30`; title is doubled in the DOM and scrolled via `.marquee-inner` CSS animation.
-- **Play button states:** idle → gold gradient + Play icon; loading → dimmed + pulsing Radio icon; playing → gold gradient + Stop icon; error → red tint + RotateCcw icon. Clicking in error state calls `play()` directly (retry).
-- **Volume slider fill:** `linear-gradient(to right, …)` computed inline from `volume * 100` percentage; forced `dir="ltr"` so the fill always grows left-to-right regardless of page direction.
-- **WaveformAnimation (inline component):** 12 bars, each 3 px wide with individual `height`, `duration` (0.48 s–0.72 s), and `delay` (0 s–0.20 s). Animates via `@keyframes waveBar` (4-stop keyframe at 0%/25%/50%/75%/100%). Fully opaque when playing, 20% opacity when stopped.
-- **Section element:** `dir="ltr"` — see §8 for rationale.
+All news pages share this pattern:
+- `export const revalidate = 60` — ISR, 1-minute TTL
+- `generateStaticParams()` for `[slug]` routes — pre-renders known slugs at build time
+- `generateMetadata()` with `alternates.languages` for `ar`↔`en` hreflang
+- Data fetched with `Promise.all()` for categories + main content in parallel
+- `if (!article) notFound()` guard for 404
 
-### `Visualizer.tsx`
-- **Renders:** A row of animated bars used as a wider spectrum-style visualizer below the track info.
-- **Props:** `isPlaying: boolean`, `barCount?: number` (default 28; RadioPlayer passes 32).
-- **State:** `bars` array generated once on mount via `useEffect`, each bar with random `delay`, `duration`, and `maxH` (height 20–100%). A `mounted` flag prevents SSR hydration mismatch — returns a fixed-height placeholder until mounted.
-- **Animation:** Uses `.vis-bar` class (defined in `globals.css`) which applies `@keyframes bar-dance`. Bars animate only when `isPlaying`; otherwise `animationDuration` is `"0s"` and they scale to 8% height.
+| Page | Route | Rendering |
+|------|-------|-----------|
+| `(site)/news/page.tsx` | `/news` | Dynamic (uses `searchParams`) |
+| `(site)/news/[slug]/page.tsx` | `/news/[slug]` | SSG + ISR |
+| `(site)/news/category/[slug]/page.tsx` | `/news/category/[slug]` | SSG + ISR |
+| `(site)/en/news/page.tsx` | `/en/news` | Dynamic |
+| `(site)/en/news/[slug]/page.tsx` | `/en/news/[slug]` | SSG + ISR |
+| `(site)/en/news/category/[slug]/page.tsx` | `/en/news/category/[slug]` | SSG + ISR |
 
-### `Sections.tsx` — three exported components
+News home layout: featured 2-col magazine grid (first article spans 2 cols) → gold divider → "آخر الأخبار"/"Latest News" heading → `auto-fill minmax(280px,1fr)` grid → pagination (circular Link buttons, gold gradient for active page).
 
-**`AboutSection`**
-- Renders: Section with a large Mic icon ornament and a body paragraph.
-- Hooks: `useLang()`.
-
-**`ScheduleSection`**
-- Renders: Section with a 2-column grid of 4 schedule cards (Morning, Noon, Evening, Night), each with an icon (Coffee, Sun, Sunset, Moon), programme name, and time range.
-- Hooks: `useLang()`.
-
-**`ContactSection`**
-- Renders: Section with a contact form (name, email, message, submit button).
-- Hooks: `useLang()`.
-- State: `sent` (boolean) — toggles button to a green "✓ Sent!" state for 4 seconds. No actual form submission is wired; `handleSubmit` only calls `e.preventDefault()` and sets `sent = true`.
-
-### `Footer.tsx`
-- **Renders:** Centred footer with `/logo.png` at 160 px wide, tagline text, and `© {year} Radio Dandana — {rights}`. Year is computed at render time via `new Date().getFullYear()`.
-- **Hooks:** `useLang()`.
+Article page layout: `dir="rtl"` (AR) / `dir="ltr"` (EN) → category badge + date → h1 title → excerpt → author avatar (initial letter in gold circle) → featured hero image → `RichTextRenderer` body → back link.
 
 ---
 
-## 5. HOOKS
+## 7. RADIO SITE (Phase 1 — Untouched)
 
-### `usePlayer.ts`
+The radio home page at `/` lives in `app/(site)/page.tsx` and uses components in `app/components/`. These files are **never modified** during news system work.
 
-**Purpose:** Manages the HTML5 Audio element for live stream playback.
+### Stream & API
 
-**Returns:**
-```ts
-{
-  state: "idle" | "loading" | "playing" | "error",
-  volume: number,          // 0–1, default 0.85
-  muted: boolean,
-  togglePlay: () => void,
-  toggleMute:  () => void,
-  handleVolumeChange: (v: number) => void,
-  play:  () => void,
-  stop:  () => void,
-  isPlaying: boolean,
-  isLoading: boolean,
-  isError:   boolean,
-}
-```
+- **Live stream:** `https://c34.radioboss.fm:9019/stream` (timestamp param appended on every play)
+- **RadioBoss API:** `https://c34.radioboss.fm/api/info/1019?key=38D1T98921NV`
+- **Poll interval:** 15 000 ms
 
-**Key implementation details:**
-- `audioRef` — the `HTMLAudioElement` is created in a `useEffect` on mount with `preload="none"` and `crossOrigin="anonymous"`. It is never recreated.
-- `stoppingRef` — a `useRef<boolean>` flag set to `true` during the `stop()` call and cleared after 300 ms via `setTimeout`. The `"error"` event handler checks this flag and does nothing if stopping was intentional — prevents false error state when clearing the `src` attribute triggers the audio error event.
-- `play()` always sets `audio.src = STREAM_URL + "?t=" + Date.now()` before calling `audio.load()` — this forces a fresh connection and prevents the browser from replaying a cached/stale buffer.
-- Volume changes apply immediately to the audio element via a separate `useEffect` watching `[volume, muted]`.
+### Components (all in `app/components/`)
 
-### `useNowPlaying.ts`
+| Component | Key behaviour |
+|-----------|--------------|
+| `Navbar.tsx` | Fixed, scrolled background after 40px, language toggle, mobile hamburger |
+| `HeroSection.tsx` | Animated logo glow, floating music notes (up to 35, interval 600ms), shimmer tagline |
+| `RadioPlayer.tsx` | Album art, track marquee (>30 chars), waveform (12 bars), visualizer, play/stop/mute/volume. `dir="ltr"` always. Media Session API wired. |
+| `Visualizer.tsx` | 32 randomised bars, `useEffect` mount guard (SSR safety) |
+| `Sections.tsx` | `AboutSection`, `ScheduleSection` (4 schedule cards), `ContactSection` (fake submit, 4s sent state) |
+| `Footer.tsx` | Logo, tagline, `© {year}` |
 
-**Purpose:** Polls the `/api/nowplaying` route and exposes current track metadata.
+### Hooks
 
-**Returns:** `{ data: NowPlayingData, loading: boolean, error: string | null, refetch: () => void }`
+| Hook | Returns |
+|------|---------|
+| `usePlayer` | `state` (idle/loading/playing/error), `volume`, `muted`, `togglePlay`, `toggleMute`, `handleVolumeChange`, `play`, `stop`, `isPlaying`, `isLoading`, `isError` |
+| `useNowPlaying` | `data: NowPlayingData`, `loading`, `error`, `refetch` — polls every 15s; does not overwrite data on error |
+| `useLang` | `lang`, `dir`, `toggleLang`, `t(key)` — updates `document.documentElement.dir/lang` on change |
 
-**`NowPlayingData` interface:**
-```ts
-{
-  artist:    string;
-  title:     string;
-  album:     string;
-  duration:  string;
-  coverUrl:  string | null;
-  listeners: number;
-  isLive:    boolean;
-  recent:    { title: string; trackartist: string; tracktitle: string; started: string }[];
-}
-```
+### Language System (`app/lib/lang.tsx`)
 
-**FALLBACK constant:**
-```ts
-{ artist: "Radio Dandana", title: "راديو دندنة", album: "", duration: "",
-  coverUrl: null, listeners: 0, isLive: true, recent: [] }
-```
-
-**Key implementation details:**
-- `fetchNow` is wrapped in `useCallback` with empty deps so the `useEffect` interval only registers once.
-- On fetch error, logs a warning and sets `error = "metadata_unavailable"` — does **not** overwrite `data` with fallback, so the last known track remains visible.
-- `timerRef` holds the interval ID for cleanup on unmount.
-
-### `useLang` (from `lib/lang.tsx`)
-
-**Purpose:** Provides language state and translations to the component tree.
-
-**Returns:** `{ lang: "ar" | "en", dir: "rtl" | "ltr", toggleLang: () => void, t: (key: string) => string }`
-
-**Key details:** Documented fully in §6.
+- `LangProvider` wraps the entire radio page in `app/(site)/page.tsx`
+- Default: `"ar"` (RTL). Toggle switches to `"en"` (LTR).
+- `t(key)` returns from a hardcoded bilingual string map (not from Payload Translations collection — those are wired separately for the CMS)
+- All radio components apply `dir={dir}` except `RadioPlayer` which is always `dir="ltr"`
 
 ---
 
-## 6. LANGUAGE & RTL SYSTEM
+## 8. DESIGN SYSTEM
 
-### `LangProvider`
-
-- Wraps the entire app in `page.tsx`.
-- Default language: `"ar"` (Arabic).
-- On every `lang` change, updates `document.documentElement.dir` and `document.documentElement.lang` via `useEffect` — this makes the browser reflow RTL/LTR for the whole page.
-- `t(key)` returns the translation string for the current language; falls back to the key itself if missing.
-
-### Direction switching
-
-- `dir` value exposed from context: `"rtl"` when `lang === "ar"`, `"ltr"` when `lang === "en"`.
-- Navbar, HeroSection, AboutSection, ScheduleSection, ContactSection, Footer all apply `dir={dir}` from context.
-- RadioPlayer applies `dir="ltr"` statically (see §8).
-- Individual Arabic text spans use `dir="auto"` so the browser detects direction from character content.
-
-### Translation keys
-
-| Key | Arabic | English |
-|-----|--------|---------|
-| `nav.home` | الرئيسية | Home |
-| `nav.about` | عن الراديو | About |
-| `nav.schedule` | البرامج | Schedule |
-| `nav.contact` | تواصل معنا | Contact |
-| `nav.listen` | استمع الآن | Listen Now |
-| `hero.tagline` | دندنها | Dandenha |
-| `hero.subtitle` | للموسيقى مساحة ،،، وللكلمة معنى | Authentic Arabic music — live 24 hours a day |
-| `hero.cta` | استمع الآن | Listen Now |
-| `hero.cta2` | البرامج | Explore Schedule |
-| `player.live` | بث مباشر | LIVE |
-| `player.now` | على الهواء الآن | Now Playing |
-| `player.volume` | مستوى الصوت | Volume |
-| `player.loading` | جاري التحميل... | Connecting... |
-| `player.error` | تعذّر الاتصال بالبث | Stream unavailable |
-| `player.retry` | إعادة المحاولة | Retry |
-| `player.listeners` | مستمع | listeners |
-| `about.title` | عن راديو دندنة | About Radio Dandana |
-| `about.body` | *(full paragraph)* | *(full paragraph)* |
-| `schedule.title` | البرامج  | Programme Schedule |
-| `schedule.morning` | صباح دندنة | Dandana Morning |
-| `schedule.noon` | نغمات الظهيرة | Midday Melodies |
-| `schedule.evening` | أمسية طرب | Evening Tarab |
-| `schedule.night` | ليالي الأصالة | Nights of Authenticity |
-| `schedule.time.m` | ٦:٠٠ — ١٢:٠٠ | 06:00 — 12:00 |
-| `schedule.time.n` | ١٢:٠٠ — ١٨:٠٠ | 12:00 — 18:00 |
-| `schedule.time.e` | ١٨:٠٠ — ٢٢:٠٠ | 18:00 — 22:00 |
-| `schedule.time.x` | ٢٢:٠٠ — ٦:٠٠ | 22:00 — 06:00 |
-| `contact.title` | تواصل معنا | Get in Touch |
-| `contact.name` | الاسم | Your Name |
-| `contact.email` | البريد الإلكتروني | Email Address |
-| `contact.message` | رسالتك | Your Message |
-| `contact.send` | أرسل | Send |
-| `footer.rights` | جميع الحقوق محفوظة | All rights reserved |
-| `footer.tagline` | دندنها | A melody that unites us |
-
----
-
-## 7. DESIGN SYSTEM
-
-### CSS Custom Properties (`globals.css`)
+### CSS Custom Properties (`app/globals.css`)
 
 ```css
---gold-deep:    #8B6914   /* dark gold — used for gradients, borders */
---gold-mid:     #C9A96E   /* mid gold — primary accent colour */
---gold-light:   #E8D5A3   /* light gold — track title text */
---gold-shimmer: #F5ECD0   /* near-white gold — shimmer animation highlight */
+--gold-deep:    #8B6914
+--gold-mid:     #C9A96E   /* primary accent */
+--gold-light:   #E8D5A3
+--gold-shimmer: #F5ECD0
 --black-void:   #080808   /* deepest background */
---black-deep:   #0D0D0D   /* slightly lighter background */
---black-card:   #131313   /* card/surface background */
---black-glass:  rgba(13,13,13,0.8)  /* glass card fill */
---text-primary: #F0E6CC   /* main body text */
---text-muted:   #8A7A5A   /* secondary/label text */
---text-subtle:  #3A3020   /* de-emphasised text and range track fill */
+--black-deep:   #0D0D0D
+--black-card:   #131313
+--black-glass:  rgba(13,13,13,0.8)
+--text-primary: #F0E6CC
+--text-muted:   #8A7A5A
+--text-subtle:  #3A3020
 ```
 
-**Tailwind colour tokens** (mirroring the CSS vars, available as `text-gold-mid`, `bg-black-void`, etc.):
+### Fonts
 
-| Token | Value |
-|-------|-------|
-| `gold.deep` | #8B6914 |
-| `gold.mid` | #C9A96E |
-| `gold.light` | #E8D5A3 |
-| `gold.shimmer` | #F5ECD0 |
-| `black.void` | #080808 |
-| `black.deep` | #0D0D0D |
-| `black.card` | #131313 |
-| `black.panel` | #1A1A14 |
-| `cream.primary` | #F0E6CC |
-| `cream.muted` | #8A7A5A |
-| `cream.subtle` | #3A3020 |
+- **Cairo** 300/400/500/600/700 — primary (Arabic + UI)
+- **IBM Plex Sans Arabic** 300/400/500 — secondary
+- Loaded from Google Fonts in `app/(site)/layout.tsx`
 
-### Font families
-
-- **Cairo** — weights 300/400/500/600/700 — primary Arabic and UI font
-- **IBM Plex Sans Arabic** — weights 300/400/500 — secondary Arabic font
-- Both loaded from Google Fonts via `<link>` in `layout.tsx` and also imported at the top of `globals.css`.
-- Tailwind `fontFamily.arabic` and `fontFamily.DEFAULT` both resolve to `["Cairo", "IBM Plex Sans Arabic", "sans-serif"]`.
-
-### Animations
-
-| Name | Defined in | What it does |
-|------|-----------|--------------|
-| `shimmer` | `globals.css` | Moves a gold gradient horizontally over text using `background-position`; used on `.shimmer-text` |
-| `pulse-ring` | `globals.css` | Scales a circle from 0.85× to 2.4× and fades out; used on `.pulse-ring` for the LIVE dot |
-| `bar-dance` | `globals.css` | Scales a bar from 0.12 to 1 (scaleY) and back; used by `.vis-bar` on the Visualizer bars |
-| `marquee` | `globals.css` | Translates `.marquee-inner` by −50% over 20 s; used for long track titles |
-| `noteFloat` | `HeroSection.tsx` (inline `<style>`) | Floats music note spans upward 110 vh with random horizontal drift and fade |
-| `logoGlow` | `HeroSection.tsx` (inline `<style>`) | Alternates between two `drop-shadow` filter intensities over 3 s |
-| `waveBar` | `RadioPlayer.tsx` (inline `<style>`) | 4-stop scaleY keyframe (0.12 → 0.65 → 0.35 → 0.85 → 1.0) for the WaveformAnimation bars |
-| `fadeUp` | `tailwind.config.ts` | Fades in and translates up 24 px; used on hero text via `animate-fade-up` |
-| `fadeIn` | `tailwind.config.ts` | Simple opacity 0→1; used via `animate-fade-in` |
-| `spin` (Tailwind built-in) | — | Used as `animate-spin-slow` (8 s) on the conic-gradient overlay over the album art |
-| `pulse` (Tailwind built-in) | — | Used as `animate-pulse` on the Radio icon during loading state |
-
-### Utility classes
+### Key Utility Classes
 
 | Class | Definition |
 |-------|-----------|
-| `.glass-card` | `background: var(--black-glass)`, `backdrop-filter: blur(28px)`, `border: 1px solid rgba(201,169,110,0.13)` |
+| `.glass-card` | `background: var(--black-glass)`, `backdrop-filter: blur(28px)`, gold border at 13% opacity |
 | `.text-gold` | `color: var(--gold-mid)` |
-| `.shimmer-text` | Gold shimmer gradient clipped to text, animated via `shimmer` keyframe |
-| `.divider-gold` | 1 px tall `<div>` with a transparent → gold → transparent horizontal gradient |
-| `.pulse-ring` | `animation: pulse-ring 2s ease-out infinite` |
-| `.vis-bar` | `transform-origin: bottom; animation: bar-dance linear infinite` |
-| `.marquee-track` | `overflow: hidden` |
-| `.marquee-inner` | `display: inline-block; animation: marquee 20s linear infinite; white-space: nowrap` — pauses on hover |
-| `.font-arabic` | Tailwind custom: `font-family: Cairo, IBM Plex Sans Arabic, sans-serif` |
-
-### Global rules
-
-- `body::before` — a fixed full-viewport SVG fractal noise texture (`opacity: 0.55`) sits at `z-index: 9999` as a film-grain effect. Pointer events are none.
-- `html` — `scroll-behavior: smooth`.
-- `section` — `padding-inline: clamp(1.25rem, 5vw, 3rem)` applied globally.
-- `input[type="range"]` — fully custom-styled: 3 px track, 13 px gold thumb with glow on hover.
-- `::-webkit-scrollbar` — 4 px, `--gold-deep` thumb.
+| `.shimmer-text` | Gold shimmer gradient, animated |
+| `.divider-gold` | 1px transparent→gold→transparent horizontal gradient |
+| `.pulse-ring` | Scales 0.85×→2.4×, fades out — used on LIVE dot |
+| `.vis-bar` | `transform-origin: bottom; animation: bar-dance` |
+| `.marquee-inner` | `animation: marquee 20s linear infinite; white-space: nowrap` — pauses on hover |
 
 ---
 
-## 8. KNOWN BEHAVIOURS & DECISIONS
+## 9. BUILD & DEPLOYMENT
 
-**Why `RadioPlayer` has `dir="ltr"` even in Arabic mode:**  
-The player layout (album art on the left, controls row left-to-right) must not flip in RTL mode — the volume slider fill direction, icon order, and control alignment all assume LTR flow. Individual Arabic text spans inside the player use `dir="auto"` so Arabic track names still render right-to-left within their own inline context.
+**Build:** `npm run build` — zero TypeScript errors required.
 
-**Why the audio `src` gets a `?t=<timestamp>` on every play:**  
-Browsers cache HTTP audio streams aggressively. Appending a fresh timestamp query parameter forces a new network request and prevents the browser from resuming a stale or disconnected buffer from a previous session.
+**Route output from last clean build:**
+```
+○  /                          Static
+ƒ  /admin/[[...segments]]     Dynamic
+ƒ  /api/[...slug]             Dynamic
+ƒ  /api/nowplaying            Dynamic
+ƒ  /en/news                   Dynamic (searchParams)
+●  /en/news/[slug]            SSG + 1min revalidate
+●  /en/news/category/[slug]   SSG + 1min revalidate
+ƒ  /news                      Dynamic (searchParams)
+●  /news/[slug]               SSG + 1min revalidate
+●  /news/category/[slug]      SSG + 1min revalidate
+```
 
-**Why `stoppingRef` exists in `usePlayer`:**  
-Clearing `audio.src` and calling `audio.load()` (which `stop()` does) fires the audio element's `"error"` event internally. Without the ref guard, `stop()` would immediately set state to `"error"`, causing the button to briefly show the retry icon. The ref allows the error handler to distinguish intentional stops from genuine stream errors.
+Pre-rendered slugs at last build:
+- Article: `test-article`
+- Categories: `events`, `radio-programs`, `artists`, `music-news`
 
-**Why `unoptimized` is on the hero logo image:**  
-`/dandana2.png` is a large transparent PNG (800 × 430). Next.js Image optimisation converts PNGs to WebP/AVIF and may strip or alter the transparency. `unoptimized` bypasses that pipeline to preserve the full-quality transparent artwork.
+**Deployment config (`vercel.json`):**
+- Region: `fra1`
+- Security headers on all routes (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`)
+- `Cache-Control: no-store` on `/api/*`
 
-**Why the playlist API was removed:**  
-An earlier version used `Promise.all` to also fetch `/api/getplaylist/1019` and parse upcoming tracks from it to populate an "Up Next" field. The Up Next field was subsequently removed from the UI entirely, making the playlist fetch unnecessary. The route was reverted to a single `/api/info` fetch.
-
-**Why `np.coverUrl` is whitelisted in `next.config.ts`:**  
-The RadioBoss API returns album art hosted on `c34.radioboss.fm`. Next.js Image with `fill` or `src` from an external domain requires that domain to be listed under `images.remotePatterns`, otherwise the `<Image>` component throws a runtime error.
-
-**Why `useNowPlaying` does not overwrite data on error:**  
-On a failed poll, only `error` state is set — `data` keeps its last known value. This means the player continues to show the last known track name rather than resetting to the fallback, which is better UX when the metadata endpoint has a transient hiccup.
-
-**Why the contact form does not actually submit:**  
-`ContactSection.handleSubmit` calls `e.preventDefault()` and sets a local `sent` state for 4 seconds. No form action, fetch call, or third-party service is wired. The submission logic is explicitly marked as a placeholder.
-
-**Grain texture layer (`body::before`):**  
-The SVG noise pattern sits at `z-index: 9999` (above all content) with `pointer-events: none` — it is purely decorative and does not intercept any interaction.
-
----
-
-## 9. ENVIRONMENT VARIABLES
-
-No `.env` file is present and no `process.env` references appear anywhere in the codebase. All configuration values (API key, station ID, stream URL, base URL) are hardcoded as constants in `usePlayer.ts` and `app/api/nowplaying/route.ts`.
+**`next.config.ts` image remote patterns:**
+- `c34.radioboss.fm` — RadioBoss album art
+- `*.public.blob.vercel-storage.com` — Vercel Blob (legacy)
+- `pub-*.r2.dev` — Cloudflare R2 public URLs
+- `process.env.R2_PUBLIC_URL` hostname — custom R2 domain
 
 ---
 
-## 10. SCRIPTS
+## 10. KNOWN ISSUES & DECISIONS
 
-All four scripts exist in `package.json`:
+**`payload-types.ts` not generated:** `npx payload generate:types` crashes on Node 20 (undici `CacheStorage` incompatibility). The news data layer uses manually-written interfaces in `app/(site)/lib/payload.ts`. When this is resolved, replace those interfaces with the generated types and update the import.
 
-| Script | Command | Purpose |
-|--------|---------|---------|
-| `npm run dev` | `next dev` | Start development server with Turbopack hot reload |
-| `npm run build` | `next build` | Production build with TypeScript type-checking |
-| `npm run start` | `next start` | Serve the production `.next` build locally |
-| `npm run lint` | `eslint` | Run ESLint across the project |
+**R2 env vars missing in dev:** All five R2 vars (`R2_BUCKET_NAME`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_URL`) are absent from `.env.local`. Media uploads return 500 in dev. Use `/api/debug-r2` to check var presence at runtime.
+
+**`@payloadcms/plugin-seo` and `@payloadcms/plugin-nested-docs`** are installed but not added to `payload.config.ts` plugins array — available for future phases.
+
+**`debug-r2` route:** `app/api/debug-r2/route.ts` is a diagnostic endpoint — it reports which R2 env vars are set (not their values). Should be removed or auth-gated before production.
+
+**Why `RadioPlayer` has `dir="ltr"` always:** The player layout (art left, controls LTR) must not flip in RTL mode. Individual Arabic text spans inside use `dir="auto"`.
+
+**Why `stoppingRef` exists in `usePlayer`:** Clearing `audio.src` fires the audio `"error"` event internally. The ref prevents this from being mistaken for a genuine stream error.
+
+**Why news home pages are Dynamic (not SSG):** They use `searchParams` (for `?page=N` pagination), which forces dynamic rendering in Next.js App Router. All other news routes are SSG with 60s revalidation.
+
+**Uncommitted work:** All Phase 2A and 2B changes are unstaged — nothing has been committed or pushed yet.

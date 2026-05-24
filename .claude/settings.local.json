@@ -65,7 +65,14 @@
       "Bash(curl -s \"http://localhost:3000/admin/login\")",
       "Bash(echo \"PID=$!\")",
       "Bash(curl -s http://localhost:3000/api/debug-r2)",
-      "Bash(kill 18134)"
+      "Bash(kill 18134)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}  /en/news/test-article\\\\n\" \"http://localhost:3000/en/news/test-article\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}  /admin\\\\n\"              \"http://localhost:3000/admin\")",
+      "Bash(kill 23624)",
+      "Bash(curl -s http://localhost:3000/news/test-article)",
+      "Bash(curl -s http://localhost:3000/news/category/radio-programs)",
+      "Bash(curl -s http://localhost:3000/news)",
+      "Bash(kill 31213)"
     ]
   }
 }
