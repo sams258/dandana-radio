@@ -19,16 +19,18 @@ export function AdLabel({ labelType, customLabelAr, customLabelEn, locale }: AdL
   if (!text) return null;
 
   return (
-    <div
+    <span
       style={{
-        fontSize:   "0.7rem",
-        color:      "var(--text-muted)",
-        fontFamily: "monospace",
-        marginBlockEnd: "0.25rem",
-        textAlign:  "start",
+        fontSize:      "0.65rem",
+        color:         "rgba(255,255,255,0.4)",
+        fontFamily:    "monospace",
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        marginBottom:  "4px",
+        display:       "block",
       }}
     >
       {text}
-    </div>
+    </span>
   );
 }

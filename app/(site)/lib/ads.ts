@@ -42,6 +42,7 @@ export interface Ad {
   embedUrl?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  placements?: string[] | AdPlacement[];
 }
 
 export interface AdPlacement {
@@ -93,28 +94,24 @@ export async function getAdsForPlacement({
 }): Promise<{ placement: AdPlacement; ads: Ad[] } | null> {
   const payload = await getPayloadInstance();
 
-  // 1. Resolve placement
-  const placementResult = await payload.find({
-    collection: "ad-placements",
-    where: { key: { equals: key } },
-    limit: 1,
-    depth: 1,
-    overrideAccess: true,
-  });
-
-  const placement = (placementResult.docs[0] ?? null) as AdPlacement | null;
+  // 1. Resolve placement by key
+  const placement = await getPlacementByKey(key);
   if (!placement || !placement.enabled) return null;
 
-  // 2. Build ads query
+  // 2. Build ads query — filter by placement assignment, locale, and date window
   const now = new Date().toISOString();
-  const localeValues = locale === "ar" ? ["ar", "both"] : ["en", "both"];
   const fetchLimit = Math.min(limit ?? placement.maxAds, placement.maxAds);
 
   const where: Where = {
     and: [
       { status: { equals: "active" } },
-      { locale: { in: localeValues } },
-      { type: { in: placement.allowedTypes } },
+      { placements: { contains: placement.id } },
+      {
+        or: [
+          { locale: { equals: locale } },
+          { locale: { equals: "both" } },
+        ],
+      },
       {
         or: [
           { startDate: { exists: false } },
@@ -140,7 +137,10 @@ export async function getAdsForPlacement({
     overrideAccess: true,
   });
 
-  const ads = adsResult.docs as unknown as Ad[];
+  // Belt-and-suspenders: enforce allowedTypes at JS level
+  const ads = (adsResult.docs as unknown as Ad[]).filter((ad) =>
+    placement.allowedTypes.includes(ad.type),
+  );
 
   // Phase 2 hook point — called for each eligible ad
   for (const ad of ads) {

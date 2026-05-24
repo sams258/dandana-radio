@@ -27,23 +27,25 @@ export function VideoAd({ ad, locale, placementKey }: VideoAdProps) {
       type="video"
       advertiserId={advertiserId}
     >
-      <AdLabel
-        labelType={ad.labelType}
-        customLabelAr={ad.customLabelAr}
-        customLabelEn={ad.customLabelEn}
-        locale={locale}
-      />
-      <div aria-label={altText} style={{ width: "100%" }}>
-        {/* No autoplay. No sound on load. Controls visible. Click-to-play via native controls. */}
-        <video
-          src={videoUrl}
-          poster={posterUrl ?? undefined}
-          controls
-          muted
-          playsInline
-          preload="metadata"
-          style={{ width: "100%", borderRadius: "8px", display: "block" }}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <AdLabel
+          labelType={ad.labelType}
+          customLabelAr={ad.customLabelAr}
+          customLabelEn={ad.customLabelEn}
+          locale={locale}
         />
+        <div aria-label={altText} style={{ width: "100%" }}>
+          {/* No autoplay. No sound on load. Controls visible. Click-to-play via native controls. */}
+          <video
+            src={videoUrl}
+            poster={posterUrl ?? undefined}
+            controls
+            muted
+            playsInline
+            preload="metadata"
+            style={{ width: "100%", borderRadius: "8px", display: "block" }}
+          />
+        </div>
       </div>
     </AdWrapper>
   );

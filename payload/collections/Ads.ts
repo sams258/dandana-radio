@@ -227,6 +227,20 @@ export const Ads: CollectionConfig = {
       },
     },
 
+    // ── Placement assignment ─────────────────────────────────────────────────
+    {
+      name: "placements",
+      type: "relationship",
+      relationTo: "ad-placements",
+      hasMany: true,
+      required: true,
+      admin: {
+        description:
+          "Select every placement where this ad should appear. If no placements are selected, the ad will not render anywhere on the site.",
+        position: "sidebar",
+      },
+    },
+
     // ── Audit trail ─────────────────────────────────────────────────────────
     {
       name: "createdBy",

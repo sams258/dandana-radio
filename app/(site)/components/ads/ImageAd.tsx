@@ -54,70 +54,70 @@ export function ImageAd({ ad, locale, placementKey, defaultSize, placementWidth,
       type="image"
       advertiserId={advertiserId}
     >
-      <AdLabel
-        labelType={ad.labelType}
-        customLabelAr={ad.customLabelAr}
-        customLabelEn={ad.customLabelEn}
-        locale={locale}
-      />
-      <Link href={clickHref} target={target} rel={rel} style={{ display: "block" }}>
-        {/* Desktop image */}
-        {w !== null && h !== null ? (
-          <div
-            style={{
-              position:     "relative",
-              width:        "100%",
-              maxWidth:     w,
-              height:       h,
-              overflow:     "hidden",
-              marginInline: "auto",
-            }}
-            className={mobileUrl ? "ad-desktop-only" : undefined}
-          >
-            <Image
-              src={desktopUrl}
-              alt={altText}
-              fill
-              style={{ objectFit }}
-              unoptimized
-            />
-          </div>
-        ) : (
-          <div
-            style={{ position: "relative", width: "100%" }}
-            className={mobileUrl ? "ad-desktop-only" : undefined}
-          >
-            <Image
-              src={desktopUrl}
-              alt={altText}
-              width={728}
-              height={90}
-              style={{ width: "100%", height: "auto", display: "block" }}
-              unoptimized
-            />
-          </div>
-        )}
-
-        {/* Mobile image (shown below breakpoint via CSS) */}
-        {mobileUrl && (
-          <>
-            <style>{`
-              @media (min-width: ${MOBILE_BREAKPOINT}px) { .ad-mobile-only { display: none; } }
-              @media (max-width: ${MOBILE_BREAKPOINT - 1}px) { .ad-desktop-only { display: none; } }
-            `}</style>
-            <div className="ad-mobile-only" style={{ position: "relative", width: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <AdLabel
+          labelType={ad.labelType}
+          customLabelAr={ad.customLabelAr}
+          customLabelEn={ad.customLabelEn}
+          locale={locale}
+        />
+        <Link href={clickHref} target={target} rel={rel} style={{ display: "block", width: "100%" }}>
+          {/* Desktop image */}
+          {w !== null && h !== null ? (
+            <div
+              style={{
+                maxWidth:     w,
+                width:        "100%",
+                marginInline: "auto",
+                overflow:     "hidden",
+              }}
+              className={mobileUrl ? "ad-desktop-only" : undefined}
+            >
               <Image
-                src={mobileUrl}
+                src={desktopUrl}
                 alt={altText}
-                width={320}
-                height={50}
+                width={w}
+                height={h}
                 style={{ width: "100%", height: "auto", display: "block" }}
                 unoptimized
               />
             </div>
-          </>
-        )}
-      </Link>
+          ) : (
+            <div
+              style={{ position: "relative", width: "100%", minHeight: "90px" }}
+              className={mobileUrl ? "ad-desktop-only" : undefined}
+            >
+              <Image
+                src={desktopUrl}
+                alt={altText}
+                fill
+                style={{ objectFit: "contain" }}
+                unoptimized
+              />
+            </div>
+          )}
+
+          {/* Mobile image (shown below breakpoint via CSS) */}
+          {mobileUrl && (
+            <>
+              <style>{`
+                @media (min-width: ${MOBILE_BREAKPOINT}px) { .ad-mobile-only { display: none; } }
+                @media (max-width: ${MOBILE_BREAKPOINT - 1}px) { .ad-desktop-only { display: none; } }
+              `}</style>
+              <div className="ad-mobile-only" style={{ position: "relative", width: "100%" }}>
+                <Image
+                  src={mobileUrl}
+                  alt={altText}
+                  width={320}
+                  height={50}
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                  unoptimized
+                />
+              </div>
+            </>
+          )}
+        </Link>
+      </div>
     </AdWrapper>
   );
 }
