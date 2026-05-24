@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Ad } from "../../lib/ads";
+import type { Ad, AdPlacement } from "../../lib/ads";
 import { ImageAd } from "./ImageAd";
 import { TextAd } from "./TextAd";
 import { VideoAd } from "./VideoAd";
@@ -12,9 +12,10 @@ interface AdRendererProps {
   ads: Ad[];
   locale: "ar" | "en";
   placementKey: string;
+  placement: AdPlacement;
 }
 
-export function AdRenderer({ ads, locale, placementKey }: AdRendererProps) {
+export function AdRenderer({ ads, locale, placementKey, placement }: AdRendererProps) {
   // Client-side round-robin: pick a random ad from the eligible set on first render.
   // Using useState initializer so the selection is stable for the component lifetime.
   const [selectedIndex] = useState(() =>
@@ -24,11 +25,32 @@ export function AdRenderer({ ads, locale, placementKey }: AdRendererProps) {
   const ad = ads[selectedIndex];
   if (!ad) return null;
 
+  const defaultSize      = placement.defaultSize;
+  const placementWidth   = placement.width  ?? undefined;
+  const placementHeight  = placement.height ?? undefined;
+
   switch (ad.type) {
     case "image":
-      return <ImageAd ad={ad} locale={locale} placementKey={placementKey} />;
+      return (
+        <ImageAd
+          ad={ad}
+          locale={locale}
+          placementKey={placementKey}
+          defaultSize={defaultSize}
+          placementWidth={placementWidth}
+          placementHeight={placementHeight}
+        />
+      );
     case "text":
-      return <TextAd  ad={ad} locale={locale} placementKey={placementKey} />;
+      return (
+        <TextAd
+          ad={ad}
+          locale={locale}
+          placementKey={placementKey}
+          defaultSize={defaultSize}
+          placementWidth={placementWidth}
+        />
+      );
     case "video":
       return <VideoAd ad={ad} locale={locale} placementKey={placementKey} />;
     case "audio":

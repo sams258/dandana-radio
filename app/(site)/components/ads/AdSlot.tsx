@@ -31,6 +31,7 @@ export async function AdSlot({ placementKey, locale }: AdSlotProps) {
           ads={[fallback]}
           locale={locale}
           placementKey={placementKey}
+          placement={placement}
         />
       );
     }
@@ -42,6 +43,6 @@ export async function AdSlot({ placementKey, locale }: AdSlotProps) {
   }
 
   return (
-    <AdRenderer ads={ads} locale={locale} placementKey={placementKey} />
+    <AdRenderer ads={ads} locale={locale} placementKey={placementKey} placement={placement} />
   );
 }

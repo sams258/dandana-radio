@@ -2,14 +2,19 @@ import Link from "next/link";
 import type { Ad } from "../../lib/ads";
 import { AdWrapper } from "./AdWrapper";
 import { AdLabel } from "./AdLabel";
+import { DEFAULT_SIZE_DIMENSIONS, type DefaultSize } from "../../../../payload/constants/ads";
 
 interface TextAdProps {
   ad: Ad;
   locale: "ar" | "en";
   placementKey: string;
+  defaultSize: string;
+  placementWidth?: number;
 }
 
-export function TextAd({ ad, locale, placementKey }: TextAdProps) {
+export function TextAd({ ad, locale, placementKey, defaultSize, placementWidth }: TextAdProps) {
+  const dims = DEFAULT_SIZE_DIMENSIONS[defaultSize as DefaultSize] ?? null;
+  const maxW = placementWidth ?? dims?.w ?? null;
   const text = ad.textContent ?? "";
   const advertiserId = String(
     typeof ad.advertiser === "object" && ad.advertiser !== null ? ad.advertiser.id : ad.advertiser ?? "",
@@ -22,6 +27,7 @@ export function TextAd({ ad, locale, placementKey }: TextAdProps) {
   const rel       = ad.openInNewTab ? "noopener noreferrer" : undefined;
 
   return (
+    <div style={maxW !== null ? { maxWidth: maxW, marginInline: "auto" } : undefined}>
     <AdWrapper
       adId={String(ad.id)}
       placementId={placementKey}
@@ -55,5 +61,6 @@ export function TextAd({ ad, locale, placementKey }: TextAdProps) {
         {text}
       </Link>
     </AdWrapper>
+    </div>
   );
 }

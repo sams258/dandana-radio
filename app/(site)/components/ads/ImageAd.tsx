@@ -3,15 +3,22 @@ import Link from "next/link";
 import type { Ad } from "../../lib/ads";
 import { AdWrapper } from "./AdWrapper";
 import { AdLabel } from "./AdLabel";
-import { MOBILE_BREAKPOINT } from "../../../../payload/constants/ads";
+import {
+  DEFAULT_SIZE_DIMENSIONS,
+  MOBILE_BREAKPOINT,
+  type DefaultSize,
+} from "../../../../payload/constants/ads";
 
 interface ImageAdProps {
   ad: Ad;
   locale: "ar" | "en";
   placementKey: string;
+  defaultSize: string;
+  placementWidth?: number;
+  placementHeight?: number;
 }
 
-export function ImageAd({ ad, locale, placementKey }: ImageAdProps) {
+export function ImageAd({ ad, locale, placementKey, defaultSize, placementWidth, placementHeight }: ImageAdProps) {
   const media = typeof ad.media === "object" && ad.media !== null ? ad.media : null;
   const mobileSrc =
     typeof ad.mobileSrc === "object" && ad.mobileSrc !== null ? ad.mobileSrc : null;
@@ -25,6 +32,15 @@ export function ImageAd({ ad, locale, placementKey }: ImageAdProps) {
   );
 
   if (!desktopUrl) return null;
+
+  const dims = DEFAULT_SIZE_DIMENSIONS[defaultSize as DefaultSize] ?? null;
+  const w    = placementWidth  ?? dims?.w ?? null;
+  const h    = placementHeight ?? dims?.h ?? null;
+
+  // Leaderboard/banner shapes must not crop — contain preserves the full creative.
+  // All other sizes (rectangle, square, etc.) fill the box.
+  const objectFit: "contain" | "cover" =
+    defaultSize === "leaderboard" || defaultSize === "mobile_leaderboard" ? "contain" : "cover";
 
   const clickHref = `/api/ads/click/${ad.id}`;
   const target    = ad.openInNewTab ? "_blank" : "_self";
@@ -46,19 +62,41 @@ export function ImageAd({ ad, locale, placementKey }: ImageAdProps) {
       />
       <Link href={clickHref} target={target} rel={rel} style={{ display: "block" }}>
         {/* Desktop image */}
-        <div
-          style={{ position: "relative", width: "100%" }}
-          className={mobileUrl ? "ad-desktop-only" : undefined}
-        >
-          <Image
-            src={desktopUrl}
-            alt={altText}
-            width={728}
-            height={90}
-            style={{ width: "100%", height: "auto", display: "block" }}
-            unoptimized
-          />
-        </div>
+        {w !== null && h !== null ? (
+          <div
+            style={{
+              position:     "relative",
+              width:        "100%",
+              maxWidth:     w,
+              height:       h,
+              overflow:     "hidden",
+              marginInline: "auto",
+            }}
+            className={mobileUrl ? "ad-desktop-only" : undefined}
+          >
+            <Image
+              src={desktopUrl}
+              alt={altText}
+              fill
+              style={{ objectFit }}
+              unoptimized
+            />
+          </div>
+        ) : (
+          <div
+            style={{ position: "relative", width: "100%" }}
+            className={mobileUrl ? "ad-desktop-only" : undefined}
+          >
+            <Image
+              src={desktopUrl}
+              alt={altText}
+              width={728}
+              height={90}
+              style={{ width: "100%", height: "auto", display: "block" }}
+              unoptimized
+            />
+          </div>
+        )}
 
         {/* Mobile image (shown below breakpoint via CSS) */}
         {mobileUrl && (
