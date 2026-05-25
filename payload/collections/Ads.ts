@@ -167,6 +167,12 @@ export const Ads: CollectionConfig = {
           return ["image", "video"].includes(type || "");
         },
       },
+      validate: (value: unknown, { data }: { data: unknown }): string | true => {
+        const d = data as Record<string, unknown>;
+        if (d?.type !== "image" && d?.type !== "video") return true;
+        if (value && typeof value === "string" && value.trim()) return true;
+        return "Alt text is required for image and video ads.";
+      },
     },
     {
       name: "textContent",
@@ -300,20 +306,6 @@ export const Ads: CollectionConfig = {
         } else if (prevStatus === "paused" && data.status !== "paused") {
           data.pausedAt = null;
           data.pausedBy = null;
-        }
-
-        // Alt text validation for image/video
-        if (["image", "video"].includes(data.type)) {
-          const alt = data.alt as unknown;
-          const hasAlt =
-            (typeof alt === "string" && alt.trim().length > 0) ||
-            (typeof alt === "object" &&
-              alt !== null &&
-              ((alt as Record<string, string>).ar?.trim() ||
-                (alt as Record<string, string>).en?.trim()));
-          if (!hasAlt) {
-            throw new Error("Alt text is required for image and video ads.");
-          }
         }
 
         return data;

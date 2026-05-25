@@ -87,7 +87,8 @@
       "Bash(PGPASSWORD=npg_vXqkV8lb4NCO psql postgresql://neondb_owner@ep-misty-salad-alc79qk7-pooler.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require -c 'SELECT key, name, enabled FROM ad_placements ORDER BY key;')",
       "Bash(curl *)",
       "Bash(pkill -f \"next dev\")",
-      "Bash(kill 57463)"
+      "Bash(kill 57463)",
+      "Bash(tee /tmp/devlog.txt)"
     ]
   }
 }
