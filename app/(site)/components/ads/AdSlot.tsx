@@ -27,12 +27,14 @@ export async function AdSlot({ placementKey, locale }: AdSlotProps) {
 
     if (fallback) {
       return (
-        <AdRenderer
-          ads={[fallback]}
-          locale={locale}
-          placementKey={placementKey}
-          placement={placement}
-        />
+        <div style={{ paddingBottom: "1.5rem" }}>
+          <AdRenderer
+            ads={[fallback]}
+            locale={locale}
+            placementKey={placementKey}
+            placement={placement}
+          />
+        </div>
       );
     }
 
@@ -43,6 +45,8 @@ export async function AdSlot({ placementKey, locale }: AdSlotProps) {
   }
 
   return (
-    <AdRenderer ads={ads} locale={locale} placementKey={placementKey} placement={placement} />
+    <div style={{ paddingBottom: "1.5rem" }}>
+      <AdRenderer ads={ads} locale={locale} placementKey={placementKey} placement={placement} />
+    </div>
   );
 }
