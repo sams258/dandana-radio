@@ -3,9 +3,11 @@
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useLang } from "../lib/lang";
+import { usePlayer } from "../(site)/context/PlayerContext";
 
 export function HeroSection() {
   const { t, lang, dir } = useLang();
+  const { play } = usePlayer();
   const notesContainerRef = useRef<HTMLDivElement>(null);
 
   // Flying music notes
@@ -188,9 +190,7 @@ export function HeroSection() {
               textDecoration: "none",
               textDecorationLine: "none",
             }}
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent('dandana:play'));
-            }}
+            onClick={play}
           >
             {t("hero.cta")}
           </a>

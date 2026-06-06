@@ -3,16 +3,25 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Play, Square, Volume2, VolumeX, Radio, RotateCcw } from "lucide-react";
-import { usePlayer } from "../hooks/usePlayer";
-import { useNowPlaying } from "../hooks/useNowPlaying";
+import { usePlayer } from "../(site)/context/PlayerContext";
 import { Visualizer } from "./Visualizer";
 import { useLang } from "../lib/lang";
 
 export function RadioPlayer() {
   const { lang, t } = useLang();
-  const { volume, muted, togglePlay, toggleMute, handleVolumeChange, isPlaying, isLoading, isError, play, stop } = usePlayer();
-  const { data: np } = useNowPlaying();
+  const {
+    volume, muted, toggle, toggleMute, setVolume,
+    isPlaying, isLoading, isError, play, stop,
+    nowPlaying,
+  } = usePlayer();
   const [imgError, setImgError] = useState(false);
+
+  const np = {
+    title:    nowPlaying?.title    || "راديو دندنة",
+    artist:   nowPlaying?.artist   || "",
+    album:    nowPlaying?.album    || "",
+    coverUrl: nowPlaying?.coverUrl || null,
+  };
 
   const isAr = lang === "ar";
 
@@ -44,15 +53,15 @@ export function RadioPlayer() {
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
 
-    navigator.mediaSession.setActionHandler("play", () => { play(); });
+    navigator.mediaSession.setActionHandler("play",  () => { play(); });
     navigator.mediaSession.setActionHandler("pause", () => { stop(); });
-    navigator.mediaSession.setActionHandler("stop", () => { stop(); });
+    navigator.mediaSession.setActionHandler("stop",  () => { stop(); });
 
     // Live radio — disable skip buttons on the OS
     navigator.mediaSession.setActionHandler("previoustrack", null);
-    navigator.mediaSession.setActionHandler("nexttrack", null);
-    navigator.mediaSession.setActionHandler("seekbackward", null);
-    navigator.mediaSession.setActionHandler("seekforward", null);
+    navigator.mediaSession.setActionHandler("nexttrack",     null);
+    navigator.mediaSession.setActionHandler("seekbackward",  null);
+    navigator.mediaSession.setActionHandler("seekforward",   null);
 
     return () => {
       navigator.mediaSession.setActionHandler("play",  null);
@@ -60,13 +69,6 @@ export function RadioPlayer() {
       navigator.mediaSession.setActionHandler("stop",  null);
     };
   }, [play, stop]);
-
-  // Hero "Listen Now" CTA — start playback when dandana:play fires
-  useEffect(() => {
-    const handler = () => { play(); };
-    window.addEventListener('dandana:play', handler);
-    return () => window.removeEventListener('dandana:play', handler);
-  }, [play]);
 
   // Browser tab title — shows current track when playing
   useEffect(() => {
@@ -313,7 +315,7 @@ export function RadioPlayer() {
                 fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif",
                 margin: 0,
               }}>
-                {np.artist && !isLoading && !isError ? np.artist : " "}
+                {np.artist && !isLoading && !isError ? np.artist : " "}
               </p>
 
             </div>
@@ -333,7 +335,7 @@ export function RadioPlayer() {
           <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "1rem", marginTop: "0.5rem" }}>
             {/* Play / Stop button */}
             <button
-              onClick={isError ? play : togglePlay}
+              onClick={isError ? play : toggle}
               disabled={isLoading}
               aria-label={isPlaying ? (isAr ? "إيقاف" : "Stop") : (isAr ? "تشغيل" : "Play")}
               className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -402,7 +404,7 @@ export function RadioPlayer() {
                 max={1}
                 step={0.01}
                 value={muted ? 0 : volume}
-                onChange={(e) => handleVolumeChange(Number(e.target.value))}
+                onChange={(e) => setVolume(Number(e.target.value))}
                 aria-label={t("player.volume")}
                 dir="ltr"
                 className="flex-1"

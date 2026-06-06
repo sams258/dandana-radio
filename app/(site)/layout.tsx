@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
+import { PlayerProvider } from "./context/PlayerContext";
+import { GlobalPlayer } from "./components/player/GlobalPlayer";
 
 export const metadata: Metadata = {
   title: "Radio Dandana | راديو دندنة",
@@ -23,7 +25,12 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body style={{ paddingBlockEnd: '80px' }}>
+        <PlayerProvider>
+          {children}
+          <GlobalPlayer />
+        </PlayerProvider>
+      </body>
     </html>
   );
 }
