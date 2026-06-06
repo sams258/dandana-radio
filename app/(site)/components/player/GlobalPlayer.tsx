@@ -36,24 +36,6 @@ export function GlobalPlayer() {
         @keyframes gp-spin {
           to { transform: rotate(360deg); }
         }
-        @keyframes gp-marquee {
-          0%   { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }
-        @media (min-width: 640px) {
-          .now-playing-scroll {
-            position: static !important;
-            height: auto !important;
-          }
-          .now-playing-scroll span {
-            animation: none !important;
-            position: static !important;
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-        }
       `}</style>
 
       {/* ── Start zone: logo mark + station name ── */}
@@ -138,58 +120,61 @@ export function GlobalPlayer() {
         </button>
 
         {/* Now-playing text */}
-        <div style={{ minWidth: 0, overflow: 'hidden', maxWidth: '100%' }}>
+        <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+          <style>{`
+            @keyframes gp-marquee {
+              0%   { transform: translateX(0%); }
+              100% { transform: translateX(-100%); }
+            }
+            .gp-scroll-outer {
+              overflow: hidden;
+              white-space: nowrap;
+            }
+            .gp-scroll-inner {
+              display: inline-block;
+              padding-inline-end: 3rem;
+              animation: gp-marquee 14s linear infinite;
+            }
+            .gp-scroll-inner.paused {
+              animation-play-state: paused;
+            }
+            @media (min-width: 640px) {
+              .gp-scroll-inner {
+                animation: none;
+                padding-inline-end: 0;
+              }
+              .gp-scroll-outer {
+                text-overflow: ellipsis;
+                display: block;
+              }
+            }
+          `}</style>
+
           {/* Title */}
-          <div className="now-playing-scroll" style={{ position: 'relative', overflow: 'hidden', height: '1.2em', whiteSpace: 'nowrap' }}>
-            <span style={{
-              position:           'absolute',
-              fontFamily:         "'Cairo', sans-serif",
-              fontSize:           '0.85rem',
-              fontWeight:         600,
-              color:              'var(--gold-light)',
-              direction:          'rtl',
-              animation:          'gp-marquee 14s linear infinite',
-              animationPlayState: isPlaying ? 'running' : 'paused',
-            }}>
-              {displayTitle}
-            </span>
-            <span style={{
-              position:           'absolute',
-              fontFamily:         "'Cairo', sans-serif",
-              fontSize:           '0.85rem',
-              fontWeight:         600,
-              color:              'var(--gold-light)',
-              direction:          'rtl',
-              animation:          'gp-marquee 14s linear infinite',
-              animationDelay:     '7s',
-              animationPlayState: isPlaying ? 'running' : 'paused',
-            }}>
+          <div className="gp-scroll-outer">
+            <span
+              className={`gp-scroll-inner${!isPlaying ? ' paused' : ''}`}
+              style={{
+                fontFamily: "'Cairo', sans-serif",
+                fontSize:   '0.85rem',
+                fontWeight: 600,
+                color:      'var(--gold-light)',
+              }}
+            >
               {displayTitle}
             </span>
           </div>
+
           {/* Artist */}
-          <div className="now-playing-scroll" style={{ position: 'relative', overflow: 'hidden', height: '1.2em', whiteSpace: 'nowrap' }}>
-            <span style={{
-              position:           'absolute',
-              fontFamily:         "'Cairo', sans-serif",
-              fontSize:           '0.72rem',
-              color:              'var(--text-muted)',
-              direction:          'rtl',
-              animation:          'gp-marquee 14s linear infinite',
-              animationPlayState: isPlaying ? 'running' : 'paused',
-            }}>
-              {displayArtist}
-            </span>
-            <span style={{
-              position:           'absolute',
-              fontFamily:         "'Cairo', sans-serif",
-              fontSize:           '0.72rem',
-              color:              'var(--text-muted)',
-              direction:          'rtl',
-              animation:          'gp-marquee 14s linear infinite',
-              animationDelay:     '7s',
-              animationPlayState: isPlaying ? 'running' : 'paused',
-            }}>
+          <div className="gp-scroll-outer">
+            <span
+              className={`gp-scroll-inner${!isPlaying ? ' paused' : ''}`}
+              style={{
+                fontFamily: "'Cairo', sans-serif",
+                fontSize:   '0.72rem',
+                color:      'var(--text-muted)',
+              }}
+            >
               {displayArtist}
             </span>
           </div>

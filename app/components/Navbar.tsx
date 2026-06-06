@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useLang } from "../lib/lang";
 
@@ -17,11 +18,11 @@ export function Navbar() {
   }, []);
 
   const navLinks: { key: string; href: string; ar?: string; en?: string }[] = [
-    { key: "news",         href: "/news",     ar: "أخبار",   en: "News"     },
     { key: "nav.home",     href: "#hero"                                    },
     { key: "nav.about",    href: "#about"                                   },
     { key: "nav.schedule", href: "#schedule"                                },
     { key: "nav.contact",  href: "#contact"                                 },
+    { key: "news",         href: "/news",     ar: "أخبار",   en: "News"     },
   ];
 
   const linkLabel = (link: { key: string; ar?: string; en?: string }) =>
@@ -61,24 +62,45 @@ export function Navbar() {
         <ul className="hidden md:flex items-center gap-7">
           {navLinks.map((link) => (
             <li key={link.key}>
-              <a
-                href={link.href}
-                className={`text-sm tracking-wide transition-colors duration-200 hover:text-gold-mid ${
-                  lang === "ar" ? "font-arabic" : ""
-                }`}
-                style={{
-                  color: "var(--text-muted)",
-                  fontSize: lang === "ar" ? "0.9rem" : "0.875rem",
-                }}
-                onMouseEnter={(e) =>
-                  ((e.target as HTMLElement).style.color = "var(--gold-mid)")
-                }
-                onMouseLeave={(e) =>
-                  ((e.target as HTMLElement).style.color = "var(--text-muted)")
-                }
-              >
-                {linkLabel(link)}
-              </a>
+              {link.href.startsWith('/') ? (
+                <Link
+                  href={link.href}
+                  className={`text-sm tracking-wide transition-colors duration-200 hover:text-gold-mid ${
+                    lang === "ar" ? "font-arabic" : ""
+                  }`}
+                  style={{
+                    color: "var(--text-muted)",
+                    fontSize: lang === "ar" ? "0.9rem" : "0.875rem",
+                  }}
+                  onMouseEnter={(e) =>
+                    ((e.target as HTMLElement).style.color = "var(--gold-mid)")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.target as HTMLElement).style.color = "var(--text-muted)")
+                  }
+                >
+                  {linkLabel(link)}
+                </Link>
+              ) : (
+                <a
+                  href={link.href}
+                  className={`text-sm tracking-wide transition-colors duration-200 hover:text-gold-mid ${
+                    lang === "ar" ? "font-arabic" : ""
+                  }`}
+                  style={{
+                    color: "var(--text-muted)",
+                    fontSize: lang === "ar" ? "0.9rem" : "0.875rem",
+                  }}
+                  onMouseEnter={(e) =>
+                    ((e.target as HTMLElement).style.color = "var(--gold-mid)")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.target as HTMLElement).style.color = "var(--text-muted)")
+                  }
+                >
+                  {linkLabel(link)}
+                </a>
+              )}
             </li>
           ))}
         </ul>
@@ -197,41 +219,71 @@ export function Navbar() {
             display: "flex",
             flexDirection: "column",
             alignItems: lang === "ar" ? "flex-end" : "flex-start",
+            direction: lang === "ar" ? "rtl" : "ltr",
             gap: "0.25rem",
           }}
         >
-          {navLinks.map((link) => (
-            <a
-              key={link.key}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              style={{
-                padding: "0.85rem 1rem",
-                borderRadius: "10px",
-                color: "var(--text-muted)",
-                fontFamily: "Cairo, sans-serif",
-                fontSize: "1rem",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                width: "100%",
-                justifyContent: lang === "ar" ? "flex-end" : "flex-start",
-                textAlign: lang === "ar" ? "end" : "start",
-                transition: "all 0.2s",
-                borderBottom: "1px solid rgba(201,169,110,0.06)",
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold-mid)";
-                (e.currentTarget as HTMLAnchorElement).style.background = "rgba(201,169,110,0.05)";
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
-                (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-              }}
-            >
-              {linkLabel(link)}
-            </a>
-          ))}
+          {navLinks.map((link) =>
+            link.href.startsWith('/') ? (
+              <Link
+                key={link.key}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  paddingInline: "1rem",
+                  paddingBlock: "0.85rem",
+                  borderRadius: "10px",
+                  color: "var(--text-muted)",
+                  fontFamily: "Cairo, sans-serif",
+                  fontSize: "1rem",
+                  textDecoration: "none",
+                  transition: "all 0.2s",
+                  borderBottom: "1px solid rgba(201,169,110,0.06)",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold-mid)";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "rgba(201,169,110,0.05)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                }}
+              >
+                {linkLabel(link)}
+              </Link>
+            ) : (
+              <a
+                key={link.key}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  paddingInline: "1rem",
+                  paddingBlock: "0.85rem",
+                  borderRadius: "10px",
+                  color: "var(--text-muted)",
+                  fontFamily: "Cairo, sans-serif",
+                  fontSize: "1rem",
+                  textDecoration: "none",
+                  transition: "all 0.2s",
+                  borderBottom: "1px solid rgba(201,169,110,0.06)",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold-mid)";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "rgba(201,169,110,0.05)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                }}
+              >
+                {linkLabel(link)}
+              </a>
+            )
+          )}
         </div>
       )}
     </header>
