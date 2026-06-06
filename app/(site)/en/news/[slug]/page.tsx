@@ -32,6 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title:       typeof article.title   === "string" ? article.title   : "",
       description: typeof article.excerpt === "string" ? article.excerpt : "",
       images:      imgUrl ? [imgUrl] : [],
+      url:         `https://www.dandanaradio.com/en/news/${slug}`,
+      type:        'article',
+      siteName:    'راديو دندنة',
     },
   };
 }
