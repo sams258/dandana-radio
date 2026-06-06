@@ -37,12 +37,17 @@ export function GlobalPlayer() {
           to { transform: rotate(360deg); }
         }
         @keyframes gp-marquee {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          0%   { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
         }
         @media (min-width: 640px) {
+          .now-playing-scroll {
+            position: static !important;
+            height: auto !important;
+          }
           .now-playing-scroll span {
             animation: none !important;
+            position: static !important;
             display: block;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -135,34 +140,57 @@ export function GlobalPlayer() {
         {/* Now-playing text */}
         <div style={{ minWidth: 0, overflow: 'hidden', maxWidth: '100%' }}>
           {/* Title */}
-          <div className="now-playing-scroll" style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+          <div className="now-playing-scroll" style={{ position: 'relative', overflow: 'hidden', height: '1.2em', whiteSpace: 'nowrap' }}>
             <span style={{
-              display:              'inline-block',
-              fontFamily:           "'Cairo', sans-serif",
-              fontSize:             '0.85rem',
-              fontWeight:           600,
-              color:                'var(--gold-light)',
-              direction:            'rtl',
-              animation:            'gp-marquee 12s linear infinite',
-              animationPlayState:   isPlaying ? 'running' : 'paused',
-              paddingInlineEnd:     '3rem',
+              position:           'absolute',
+              fontFamily:         "'Cairo', sans-serif",
+              fontSize:           '0.85rem',
+              fontWeight:         600,
+              color:              'var(--gold-light)',
+              direction:          'rtl',
+              animation:          'gp-marquee 14s linear infinite',
+              animationPlayState: isPlaying ? 'running' : 'paused',
             }}>
-              {displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{displayTitle}
+              {displayTitle}
+            </span>
+            <span style={{
+              position:           'absolute',
+              fontFamily:         "'Cairo', sans-serif",
+              fontSize:           '0.85rem',
+              fontWeight:         600,
+              color:              'var(--gold-light)',
+              direction:          'rtl',
+              animation:          'gp-marquee 14s linear infinite',
+              animationDelay:     '7s',
+              animationPlayState: isPlaying ? 'running' : 'paused',
+            }}>
+              {displayTitle}
             </span>
           </div>
           {/* Artist */}
-          <div className="now-playing-scroll" style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+          <div className="now-playing-scroll" style={{ position: 'relative', overflow: 'hidden', height: '1.2em', whiteSpace: 'nowrap' }}>
             <span style={{
-              display:              'inline-block',
-              fontFamily:           "'Cairo', sans-serif",
-              fontSize:             '0.72rem',
-              color:                'var(--text-muted)',
-              direction:            'rtl',
-              animation:            'gp-marquee 12s linear infinite',
-              animationPlayState:   isPlaying ? 'running' : 'paused',
-              paddingInlineEnd:     '3rem',
+              position:           'absolute',
+              fontFamily:         "'Cairo', sans-serif",
+              fontSize:           '0.72rem',
+              color:              'var(--text-muted)',
+              direction:          'rtl',
+              animation:          'gp-marquee 14s linear infinite',
+              animationPlayState: isPlaying ? 'running' : 'paused',
             }}>
-              {displayArtist}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{displayArtist}
+              {displayArtist}
+            </span>
+            <span style={{
+              position:           'absolute',
+              fontFamily:         "'Cairo', sans-serif",
+              fontSize:           '0.72rem',
+              color:              'var(--text-muted)',
+              direction:          'rtl',
+              animation:          'gp-marquee 14s linear infinite',
+              animationDelay:     '7s',
+              animationPlayState: isPlaying ? 'running' : 'paused',
+            }}>
+              {displayArtist}
             </span>
           </div>
         </div>

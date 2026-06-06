@@ -17,7 +17,7 @@ export function Navbar() {
   }, []);
 
   const navLinks: { key: string; href: string; ar?: string; en?: string }[] = [
-    { key: "news",         href: "/news",     ar: "أخبار",  en: "News"     },
+    { key: "news",         href: "/news",     ar: "أخبار",   en: "News"     },
     { key: "nav.home",     href: "#hero"                                    },
     { key: "nav.about",    href: "#about"                                   },
     { key: "nav.schedule", href: "#schedule"                                },
@@ -214,6 +214,7 @@ export function Navbar() {
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
+                width: "100%",
                 justifyContent: lang === "ar" ? "flex-end" : "flex-start",
                 textAlign: lang === "ar" ? "end" : "start",
                 transition: "all 0.2s",
@@ -231,26 +232,6 @@ export function Navbar() {
               {linkLabel(link)}
             </a>
           ))}
-          <a
-            href="#player"
-            onClick={() => setMenuOpen(false)}
-            style={{
-              marginTop: "0.75rem",
-              padding: "0.85rem 1.5rem",
-              borderRadius: "50px",
-              textAlign: "center",
-              fontFamily: "Cairo, sans-serif",
-              fontSize: "0.95rem",
-              fontWeight: "600",
-              textDecoration: "none",
-              background: "linear-gradient(135deg, var(--gold-deep), var(--gold-mid))",
-              color: "#080808",
-              boxShadow: "0 0 20px rgba(201,169,110,0.2)",
-              display: "block",
-            }}
-          >
-            {t("nav.listen")}
-          </a>
         </div>
       )}
     </header>
