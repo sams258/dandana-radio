@@ -16,12 +16,18 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinks = [
-    { key: "nav.home",     href: "#hero"     },
-    { key: "nav.about",    href: "#about"    },
-    { key: "nav.schedule", href: "#schedule" },
-    { key: "nav.contact",  href: "#contact"  },
+  const navLinks: { key: string; href: string; ar?: string; en?: string }[] = [
+    { key: "news",         href: "/news",     ar: "أخبار",  en: "News"     },
+    { key: "nav.home",     href: "#hero"                                    },
+    { key: "nav.about",    href: "#about"                                   },
+    { key: "nav.schedule", href: "#schedule"                                },
+    { key: "nav.contact",  href: "#contact"                                 },
   ];
+
+  const linkLabel = (link: { key: string; ar?: string; en?: string }) =>
+    link.ar !== undefined && link.en !== undefined
+      ? lang === "ar" ? link.ar : link.en
+      : t(link.key);
 
   return (
     <header
@@ -71,7 +77,7 @@ export function Navbar() {
                   ((e.target as HTMLElement).style.color = "var(--text-muted)")
                 }
               >
-                {t(link.key)}
+                {linkLabel(link)}
               </a>
             </li>
           ))}
@@ -182,14 +188,18 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div style={{
-          background: "rgba(8,8,8,0.97)",
-          borderTop: "1px solid rgba(201,169,110,0.12)",
-          padding: "1.25rem 1.5rem 1.75rem 1.5rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.25rem",
-        }}>
+        <div
+          dir={lang === "ar" ? "rtl" : "ltr"}
+          style={{
+            background: "rgba(8,8,8,0.97)",
+            borderTop: "1px solid rgba(201,169,110,0.12)",
+            padding: "1.25rem 1.5rem 1.75rem 1.5rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: lang === "ar" ? "flex-end" : "flex-start",
+            gap: "0.25rem",
+          }}
+        >
           {navLinks.map((link) => (
             <a
               key={link.key}
@@ -205,6 +215,7 @@ export function Navbar() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: lang === "ar" ? "flex-end" : "flex-start",
+                textAlign: lang === "ar" ? "end" : "start",
                 transition: "all 0.2s",
                 borderBottom: "1px solid rgba(201,169,110,0.06)",
               }}
@@ -217,7 +228,7 @@ export function Navbar() {
                 (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
               }}
             >
-              {t(link.key)}
+              {linkLabel(link)}
             </a>
           ))}
           <a
