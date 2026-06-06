@@ -61,6 +61,13 @@ export function RadioPlayer() {
     };
   }, [play, stop]);
 
+  // Hero "Listen Now" CTA — start playback when dandana:play fires
+  useEffect(() => {
+    const handler = () => { play(); };
+    window.addEventListener('dandana:play', handler);
+    return () => window.removeEventListener('dandana:play', handler);
+  }, [play]);
+
   // Browser tab title — shows current track when playing
   useEffect(() => {
     if (typeof document === "undefined") return;

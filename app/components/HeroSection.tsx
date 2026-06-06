@@ -188,6 +188,9 @@ export function HeroSection() {
               textDecoration: "none",
               textDecorationLine: "none",
             }}
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('dandana:play'));
+            }}
           >
             {t("hero.cta")}
           </a>
