@@ -7,6 +7,7 @@ import { RichTextRenderer } from "../../components/news/RichTextRenderer";
 import { NewsNav } from "../../components/news/NewsNav";
 import { AdSlot } from "../../components/ads/AdSlot";
 import { splitBodyForAd } from "../../lib/splitBodyForAd";
+import { ShareButtons } from "../../components/news/ShareButtons";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -39,6 +40,7 @@ export const revalidate = 60;
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
+  const shareUrl = `https://dandanaradio.com/news/${slug}`;
   const [article, categories] = await Promise.all([
     getArticleBySlug(slug, "ar"),
     getAllCategories("ar"),
@@ -183,6 +185,15 @@ export default async function ArticlePage({ params }: Props) {
             </>
           );
         })()}
+
+        {/* Share buttons */}
+        <div style={{ borderTop: "1px solid rgba(201,169,110,0.1)", marginBlockStart: "2.5rem", paddingBlockStart: "1.5rem" }}>
+          <ShareButtons
+            url={shareUrl}
+            title={typeof article.title === "string" ? article.title : ""}
+            locale="ar"
+          />
+        </div>
 
         {/* Back link */}
         <div style={{ marginTop: "3rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(201,169,110,0.1)" }}>
