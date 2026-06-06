@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 interface ShareButtonsProps {
   url: string;
@@ -62,20 +62,6 @@ const PLATFORMS: Platform[] = [
     ),
   },
   {
-    id:     'messenger',
-    name:   'Messenger',
-    bg:     'rgba(0,132,255,0.15)',
-    border: '1px solid rgba(0,132,255,0.30)',
-    color:  '#0084FF',
-    href:   (url) =>
-      `https://www.facebook.com/dialog/send?link=${encodeURIComponent(url)}&app_id=YOUR_APP_ID&redirect_uri=${encodeURIComponent(url)}`,
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 0C5.374 0 0 4.975 0 11.111c0 3.497 1.745 6.616 4.472 8.652V24l4.086-2.242c1.09.301 2.246.465 3.442.465 6.626 0 12-4.974 12-11.111C24 4.975 18.626 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L10.732 8l3.131 3.26L19.752 8l-6.561 6.963z"/>
-      </svg>
-    ),
-  },
-  {
     id:     'snapchat',
     name:   'Snapchat',
     bg:     'rgba(255,252,0,0.15)',
@@ -94,15 +80,18 @@ const PLATFORMS: Platform[] = [
 const SHARE_LABEL = { ar: 'شارك هذا المقال', en: 'Share this article' } as const;
 
 export function ShareButtons({ url, title, locale }: ShareButtonsProps) {
+  const [copied, setCopied] = useState(false);
+  const lang = locale;
+
   return (
     <section aria-label={SHARE_LABEL[locale]}>
       <style>{`
         .share-btn { transition: background 0.15s ease; }
-        .share-btn-whatsapp:hover  { background: rgba(37,211,102,0.30) !important; }
-        .share-btn-facebook:hover  { background: rgba(24,119,242,0.30) !important; }
-        .share-btn-x:hover         { background: rgba(0,0,0,0.95) !important; }
-        .share-btn-messenger:hover { background: rgba(0,132,255,0.30) !important; }
-        .share-btn-snapchat:hover  { background: rgba(255,252,0,0.40) !important; }
+        .share-btn-whatsapp:hover { background: rgba(37,211,102,0.30) !important; }
+        .share-btn-facebook:hover { background: rgba(24,119,242,0.30) !important; }
+        .share-btn-x:hover        { background: rgba(0,0,0,0.95) !important; }
+        .share-btn-snapchat:hover { background: rgba(255,252,0,0.40) !important; }
+        .share-btn-copy:hover     { background: rgba(107,114,128,0.30) !important; }
       `}</style>
 
       <p style={{
@@ -144,6 +133,38 @@ export function ShareButtons({ url, title, locale }: ShareButtonsProps) {
             {p.name}
           </a>
         ))}
+        <button
+          className="share-btn share-btn-copy"
+          onClick={async () => {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          }}
+          style={{
+            display:       'inline-flex',
+            alignItems:    'center',
+            gap:           '8px',
+            background:    'rgba(107,114,128,0.15)',
+            border:        `1px solid ${copied ? '#22C55E' : 'rgba(107,114,128,0.30)'}`,
+            color:         copied ? '#22C55E' : '#6B7280',
+            borderRadius:  '8px',
+            paddingBlock:  '8px',
+            paddingInline: '14px',
+            fontFamily:    "'Cairo', sans-serif",
+            fontSize:      '0.8rem',
+            fontWeight:    '500',
+            cursor:        'pointer',
+            transition:    'border-color 0.15s ease, color 0.15s ease',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+          {copied
+            ? (lang === 'ar' ? '✓ تم النسخ' : '✓ Copied')
+            : (lang === 'ar' ? 'نسخ الرابط' : 'Copy Link')}
+        </button>
       </div>
     </section>
   );
