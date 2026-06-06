@@ -36,6 +36,19 @@ export function GlobalPlayer() {
         @keyframes gp-spin {
           to { transform: rotate(360deg); }
         }
+        @keyframes gp-marquee {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @media (min-width: 640px) {
+          .now-playing-scroll span {
+            animation: none !important;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
       `}</style>
 
       {/* ── Start zone: logo mark + station name ── */}
@@ -120,32 +133,38 @@ export function GlobalPlayer() {
         </button>
 
         {/* Now-playing text */}
-        <div style={{ minWidth: 0, overflow: 'hidden' }}>
-          <p style={{
-            fontFamily:    "'Cairo', sans-serif",
-            fontSize:      '0.85rem',
-            fontWeight:    600,
-            color:         'var(--gold-light)',
-            margin:        0,
-            overflow:      'hidden',
-            textOverflow:  'ellipsis',
-            whiteSpace:    'nowrap',
-            direction:     'rtl',
-          }}>
-            {displayTitle}
-          </p>
-          <p style={{
-            fontFamily:   "'Cairo', sans-serif",
-            fontSize:     '0.72rem',
-            color:        'var(--text-muted)',
-            margin:       0,
-            overflow:     'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace:   'nowrap',
-            direction:    'rtl',
-          }}>
-            {displayArtist}
-          </p>
+        <div style={{ minWidth: 0, overflow: 'hidden', maxWidth: '100%' }}>
+          {/* Title */}
+          <div className="now-playing-scroll" style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+            <span style={{
+              display:              'inline-block',
+              fontFamily:           "'Cairo', sans-serif",
+              fontSize:             '0.85rem',
+              fontWeight:           600,
+              color:                'var(--gold-light)',
+              direction:            'rtl',
+              animation:            'gp-marquee 12s linear infinite',
+              animationPlayState:   isPlaying ? 'running' : 'paused',
+              paddingInlineEnd:     '3rem',
+            }}>
+              {displayTitle}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{displayTitle}
+            </span>
+          </div>
+          {/* Artist */}
+          <div className="now-playing-scroll" style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+            <span style={{
+              display:              'inline-block',
+              fontFamily:           "'Cairo', sans-serif",
+              fontSize:             '0.72rem',
+              color:                'var(--text-muted)',
+              direction:            'rtl',
+              animation:            'gp-marquee 12s linear infinite',
+              animationPlayState:   isPlaying ? 'running' : 'paused',
+              paddingInlineEnd:     '3rem',
+            }}>
+              {displayArtist}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{displayArtist}
+            </span>
+          </div>
         </div>
       </div>
 
