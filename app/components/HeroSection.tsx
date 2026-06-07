@@ -218,7 +218,7 @@ export function HeroSection() {
         <div style={{ display: "flex", gap: "1.25rem", justifyContent: "center", marginTop: "2rem" }}>
           {[
             {
-              href: "https://www.facebook.com/sawalefkon/",
+              href: "https://www.facebook.com/Radiodandana",
               label: "Facebook",
               svg: (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
