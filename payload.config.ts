@@ -33,7 +33,7 @@ export default buildConfig({
   },
   admin: {
     user: "users",
-    meta: { titleSuffix: "— Dandana Radio CMS" },
+    meta: { titleSuffix: "— Dandana Radio CMS", favicon: "/favicon.ico" },
   },
   collections: [Users, Pages, Translations, Media, Articles, Categories, Tags, Advertisers, AdPlacements, Ads],
   plugins: [

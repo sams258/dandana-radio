@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description: "Stream live Arabic music",
     images: ["/logo.png"],
   },
-  icons: { icon: "/logo.png" },
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
